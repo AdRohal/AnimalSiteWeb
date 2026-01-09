@@ -1,0 +1,95 @@
+/* stylelint-disable at-rule-no-unknown */
+/* Import Google Fonts */
+@import url('https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Poppins', sans-serif;
+  background: linear-gradient(to bottom, #F5EFE6 0%, #FAF6EF 100%);
+  color: #2C3E50;
+  min-height: 100vh;
+}
+
+/* Arabic font */
+[dir="rtl"] body,
+.arabic {
+  font-family: 'Cairo', sans-serif;
+}
+
+/* Smooth transitions */
+* {
+  transition: color 0.2s ease, background-color 0.2s ease;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #F5EFE6;
+}
+
+::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #C87548 0%, #A85D38 100%);
+  border-radius: 6px;
+  border: 2px solid #F5EFE6;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #A85D38 0%, #8E4E2F 100%);
+}
+
+/* Animation classes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.fade-in {
+  animation: fadeIn 0.5s ease-in-out;
+}
+
+/* Button styles */
+.btn-primary {
+  @apply bg-primary-500 hover:bg-primary-700 text-white font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-warm hover:shadow-warm-lg transform hover:scale-105;
+}
+
+.btn-secondary {
+  @apply bg-white hover:bg-secondary-200 text-dark-700 font-semibold py-3 px-6 rounded-lg transition-all duration-300 shadow-md hover:shadow-lg border-2 border-primary-200 hover:border-primary-300;
+}
+
+/* Card styles */
+.card {
+  @apply bg-white rounded-xl shadow-warm hover:shadow-warm-lg transition-all duration-300 overflow-hidden transform hover:-translate-y-1;
+}
+
+/* Input styles */
+.input-field {
+  @apply w-full px-4 py-3 border-2 border-primary-100 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary-400 focus:border-transparent transition-all duration-200 bg-white text-dark-700;
+}
+
+/* RTL Support */
+[dir="rtl"] {
+  direction: rtl;
+}
+
+[dir="ltr"] {
+  direction: ltr;
+}
+/* stylelint-enable at-rule-no-unknown */
