@@ -22,7 +22,7 @@ const Navbar = () => {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
-            <img src="/Logo.jpeg" alt="Animal Rescue logo" className="w-10 h-10 object-cover rounded-full shadow-warm" />
+            <img src="/logo.png" alt="Animal Rescue logo" className="w-10 h-10 object-cover rounded-full shadow-warm" />
             <div className={language === 'ar' ? 'text-right mr-2' : ''}>
               <h1 className="font-bold text-lg text-primary-600">
                 {language === 'ar' ? 'جمعية إنقاذ الحيوانات' : 'Animal Rescue'}
@@ -34,12 +34,12 @@ const Navbar = () => {
           </Link>
 
           {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-6">
+          <div className="hidden md:flex items-center space-x-1">
             {navLinks.map((link) => (
               <Link
                 key={link.path}
                 to={link.path}
-                className="text-dark-600 hover:text-primary-600 font-medium text-sm transition-colors relative group"
+                className="text-dark-600 hover:text-primary-600 font-medium text-sm transition-colors relative group px-3 py-2"
               >
                 {link.label}
                 <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 transition-all duration-300 group-hover:w-full"></span>

@@ -157,9 +157,9 @@ const Donations = () => {
       </section>
 
       {/* Why Donate Section */}
-      <section className="py-16 bg-white border-t-2 border-primary-100">
+      <section className="py-12 bg-white border-t-2 border-primary-100">
         <div className="container mx-auto px-4">
-          <h2 className="text-3xl font-bold text-center text-dark-700 mb-12">
+          <h2 className="text-3xl font-bold text-center text-dark-700 mb-8">
             {language === 'ar' ? 'لماذا تبرع؟' : 'Why Donate?'}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-4xl mx-auto">

@@ -69,8 +69,15 @@ const Videos = () => {
     }
   };
 
-  const activeEmbedUrl = activeVideo ? autoplayEmbedUrl(toEmbedUrl(activeVideo.media_url)) : null;
-  const isFacebook = activeVideo ? isFacebookUrl(activeVideo.media_url) : false;
+  // Check if URL is a data URL (bytea media)
+  const isDataUrl = (url) => {
+    if (!url) return false;
+    return url.startsWith('data:');
+  };
+
+  const activeIsDataUrl = activeVideo ? isDataUrl(activeVideo.media_url) : false;
+  const activeEmbedUrl = activeVideo && !activeIsDataUrl ? autoplayEmbedUrl(toEmbedUrl(activeVideo.media_url)) : null;
+  const isFacebook = activeVideo && !activeIsDataUrl ? isFacebookUrl(activeVideo.media_url) : false;
   const modalTitle = activeVideo ? (language === 'ar' ? activeVideo.title_ar : activeVideo.title_en) : t('videosTitle');
 
   return (
@@ -165,7 +172,21 @@ const Videos = () => {
             className="relative inline-flex rounded-3xl shadow-2xl overflow-hidden bg-black max-w-[90vw] z-10"
             onClick={(event) => event.stopPropagation()}
           >
-            {activeEmbedUrl && !isFacebook ? (
+            {activeIsDataUrl ? (
+              <div className="relative" style={{ width: 'min(90vw, 960px)', aspectRatio: '16 / 9' }}>
+                <video
+                  src={activeVideo.media_url}
+                  className="absolute inset-0 w-full h-full object-contain rounded-xl"
+                  autoPlay
+                  controls
+                  playsInline
+                  onLoadedMetadata={(e) => {
+                    const v = e.target;
+                    setActiveIsPortrait(v.videoHeight > v.videoWidth);
+                  }}
+                />
+              </div>
+            ) : activeEmbedUrl && !isFacebook ? (
               <div
                 className="relative"
                 style={{ width: 'min(90vw, 960px)', aspectRatio: '16 / 9' }}
@@ -175,7 +196,6 @@ const Videos = () => {
                   src={activeEmbedUrl}
                   className="absolute inset-0 w-full h-full rounded-xl"
                   allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
                   loading="lazy"
                   style={{ border: 'none' }}
                 />

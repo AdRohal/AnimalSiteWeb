@@ -2,7 +2,7 @@ import React from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useSocial } from '../contexts/SocialContext';
 import { useContact } from '../contexts/ContactContext';
-import { Facebook, Instagram, Twitter, Mail, Phone, MapPin } from 'lucide-react';
+import { Facebook, Instagram, Twitter, Mail, Phone, MapPin, Youtube, Music, MessageCircle } from 'lucide-react';
 import { Link } from 'react-router-dom';
 
 const Footer = () => {
@@ -14,19 +14,21 @@ const Footer = () => {
     { platform: 'facebook', Icon: Facebook, url: getLink('facebook') },
     { platform: 'instagram', Icon: Instagram, url: getLink('instagram') },
     { platform: 'twitter', Icon: Twitter, url: getLink('twitter') },
+    { platform: 'youtube', Icon: Youtube, url: getLink('youtube') },
+    { platform: 'tiktok', Icon: Music, url: getLink('tiktok') },
   ].filter((item) => !!item.url);
 
   const contactItems = [
     { key: 'phone', label: t('phone'), Icon: Phone, value: contact?.phone },
     { key: 'email', label: t('email'), Icon: Mail, value: contact?.email },
-    { key: 'whatsapp', label: t('whatsapp'), Icon: Phone, value: contact?.whatsapp },
+    { key: 'whatsapp', label: t('whatsapp'), Icon: MessageCircle, value: contact?.whatsapp },
     { key: 'address', label: t('address'), Icon: MapPin, value: contact?.address },
   ].filter((item) => !!item.value);
 
   const hasContactInfo = contactItems.length > 0;
 
   return (
-    <footer className="bg-gradient-to-br from-dark-800 to-dark-900 text-white mt-20">
+    <footer className="bg-gradient-to-br from-dark-800 to-dark-900 text-white">
       <div className="container mx-auto px-4 py-12">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
           {/* About */}
@@ -36,7 +38,7 @@ const Footer = () => {
               {t('heroSubtitle')}
             </p>
             {socials.length > 0 && (
-              <div className="flex space-x-4">
+              <div className="flex space-x-6">
                 {socials.map(({ platform, Icon, url }) => (
                   <a
                     key={platform}

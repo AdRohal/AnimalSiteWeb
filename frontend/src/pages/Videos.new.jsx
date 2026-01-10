@@ -126,7 +126,6 @@ const Videos = () => {
                   src={activeEmbedUrl}
                   className="absolute inset-0 w-full h-full"
                   allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
                   loading="lazy"
                   style={{ border: 'none' }}
                 />

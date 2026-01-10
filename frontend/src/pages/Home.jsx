@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
+import { useSocial } from '../contexts/SocialContext';
 import { Link } from 'react-router-dom';
 import api from '../utils/api';
 import MediaCard from '../components/MediaCard';
-import { Heart, Users, Award, Play, ExternalLink } from 'lucide-react';
+import { Heart, Users, Award, Play, ExternalLink, Facebook, Instagram, Twitter, Youtube, Music } from 'lucide-react';
 import { toEmbedUrl } from '../utils/media';
 import { getVideoPoster } from '../utils/media';
 
@@ -11,6 +12,7 @@ const youtubeLink = 'https://www.youtube.com/watch?v=Fq1Aq1_UNgQ';
 
 const Home = () => {
   const { t, language } = useLanguage();
+  const { links: socialLinks } = useSocial();
   const [recentPosts, setRecentPosts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [activeVideo, setActiveVideo] = useState(null);
@@ -58,6 +60,35 @@ const Home = () => {
     }
   };
 
+  const getSocialIcon = (platform) => {
+    const iconProps = { size: 24, className: 'text-white' };
+    switch (platform) {
+      case 'facebook':
+        return <Facebook {...iconProps} />;
+      case 'instagram':
+        return <Instagram {...iconProps} />;
+      case 'twitter':
+        return <Twitter {...iconProps} />;
+      case 'youtube':
+        return <Youtube {...iconProps} />;
+      case 'tiktok':
+        return <Music {...iconProps} />;
+      default:
+        return <ExternalLink {...iconProps} />;
+    }
+  };
+
+  const getSocialLabel = (platform) => {
+    const labels = {
+      facebook: 'Facebook',
+      instagram: 'Instagram',
+      twitter: 'Twitter',
+      youtube: 'YouTube',
+      tiktok: 'TikTok',
+    };
+    return labels[platform] || platform;
+  };
+
   const activeEmbedUrl = activeVideo ? autoplayEmbedUrl(toEmbedUrl(activeVideo.media_url)) : null;
   const isFacebook = activeVideo ? isFacebookUrl(activeVideo.media_url) : false;
   const modalTitle = activeVideo ? (language === 'ar' ? activeVideo.title_ar : activeVideo.title_en) : t('videosTitle');
@@ -99,6 +130,33 @@ const Home = () => {
       {/* Gallery Section */}
       <section className="py-16 bg-white">
         <div className="container mx-auto px-4">
+          {/* Social Media Icons */}
+          {socialLinks && socialLinks.length > 0 && (
+            <div className="mb-16">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-bold text-dark-700">{language === 'ar' ? 'تابعنا على وسائل التواصل' : 'Follow Us'}</h3>
+              </div>
+              <div className="flex justify-center">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-2xl">
+                  {socialLinks.map((social) => (
+                    <a
+                      key={social.platform}
+                      href={social.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 p-6 shadow-warm-lg hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col items-center justify-center text-center"
+                    >
+                      <div className="mb-3 group-hover:scale-110 transition-transform">
+                        {getSocialIcon(social.platform)}
+                      </div>
+                      <p className="text-white font-semibold text-sm">{getSocialLabel(social.platform)}</p>
+                    </a>
+                  ))}
+                </div>
+              </div>
+            </div>
+          )}
+
           <div className="text-center mb-12">
             <h2 className="text-4xl font-bold text-dark-700 mb-4">{t('postsTitle')}</h2>
             <p className="text-dark-500 text-lg">{t('postsSubtitle')}</p>
@@ -227,7 +285,6 @@ const Home = () => {
                   src={activeEmbedUrl}
                   className="absolute inset-0 w-full h-full rounded-xl"
                   allow="autoplay; fullscreen; picture-in-picture"
-                  allowFullScreen
                   loading="lazy"
                   style={{ border: 'none' }}
                 />

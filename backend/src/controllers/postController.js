@@ -1,19 +1,23 @@
 import pool from '../config/database.js';
-import fs from 'fs';
-import path from 'path';
-import { fileURLToPath } from 'url';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const uploadsDir = path.resolve(__dirname, '../../uploads');
 
 const deleteLocalMedia = (mediaUrl) => {
-  if (!mediaUrl || !mediaUrl.startsWith('/uploads/')) return;
-  const filename = mediaUrl.replace('/uploads/', '');
-  const filePath = path.join(uploadsDir, filename);
-  if (fs.existsSync(filePath)) {
-    fs.unlinkSync(filePath);
+  // No longer needed - files are stored in database
+  return;
+};
+
+// Helper function to convert bytea to base64 data URL
+const convertBytealToDataUrl = (post) => {
+  if (!post.media_data) return post;
+  
+  const postCopy = { ...post };
+  if (postCopy.media_data) {
+    const base64 = Buffer.from(postCopy.media_data).toString('base64');
+    const mimeType = postCopy.media_mime_type || 'image/jpeg';
+    postCopy.media_url = `data:${mimeType};base64,${base64}`;
+    delete postCopy.media_data; // Remove binary data from response
+    delete postCopy.media_mime_type;
   }
+  return postCopy;
 };
 
 // Get all posts (with optional filters)
@@ -42,11 +46,14 @@ export const getPosts = async (req, res) => {
 
     const result = await pool.query(query, params);
     
+    // Convert bytea to base64 data URLs
+    const postsWithDataUrls = result.rows.map(convertBytealToDataUrl);
+    
     // Get total count
     const countResult = await pool.query('SELECT COUNT(*) FROM posts WHERE 1=1');
     
     res.json({
-      posts: result.rows,
+      posts: postsWithDataUrls,
       total: parseInt(countResult.rows[0].count),
       limit: parseInt(limit),
       offset: parseInt(offset)
@@ -68,7 +75,8 @@ export const getPost = async (req, res) => {
       return res.status(404).json({ message: 'Post not found' });
     }
 
-    res.json(result.rows[0]);
+    const postWithDataUrl = convertBytealToDataUrl(result.rows[0]);
+    res.json(postWithDataUrl);
   } catch (error) {
     console.error('Get post error:', error);
     res.status(500).json({ message: 'Server error' });
@@ -87,26 +95,35 @@ export const createPost = async (req, res) => {
     }
 
     let media_url = null;
+    let media_data = null;
+    let media_mime_type = null;
 
     if (normalizedMediaType === 'video') {
       if (req.file) {
-        media_url = `/uploads/${req.file.filename}`;
+        // Store as base64 bytea
+        const fileBuffer = req.file.buffer;
+        media_data = fileBuffer;
+        media_mime_type = req.file.mimetype || 'video/mp4';
       } else if (providedUrl) {
+        // Store external URL
         media_url = providedUrl;
       } else {
-        return res.status(400).json({ message: 'Video posts require a media URL or file' });
+        return res.status(400).json({ message: 'Video posts require a media file or URL' });
       }
     } else {
       if (!req.file) {
         return res.status(400).json({ message: 'Image posts require a file upload' });
       }
-      media_url = `/uploads/${req.file.filename}`;
+      // Store image as base64 bytea
+      const fileBuffer = req.file.buffer;
+      media_data = fileBuffer;
+      media_mime_type = req.file.mimetype || 'image/jpeg';
     }
 
     const result = await pool.query(
-      `INSERT INTO posts (title_en, title_ar, description_en, description_ar, media_type, media_url, is_published, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8) RETURNING *`,
-      [title_en, title_ar, description_en || '', description_ar || '', normalizedMediaType, media_url, is_published !== 'false', req.admin.id]
+      `INSERT INTO posts (title_en, title_ar, description_en, description_ar, media_type, media_url, media_data, media_mime_type, is_published, created_by)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10) RETURNING *`,
+      [title_en, title_ar, description_en || '', description_ar || '', normalizedMediaType, media_url, media_data, media_mime_type, is_published !== 'false', req.admin.id]
     );
 
     res.status(201).json(result.rows[0]);
@@ -133,25 +150,24 @@ export const updatePost = async (req, res) => {
     const normalizedMediaType = media_type ? media_type.toLowerCase() : normalizedExistingType;
 
     let media_url = null;
+    let media_data = null;
+    let media_mime_type = null;
+
     if (req.file) {
-      media_url = `/uploads/${req.file.filename}`;
+      // Store new file as base64 bytea
+      media_data = req.file.buffer;
+      media_mime_type = req.file.mimetype || 'image/jpeg';
     } else if (normalizedMediaType === 'video' && providedUrl) {
       media_url = providedUrl;
     }
 
-    if (req.file && existingPost.media_url) {
-      deleteLocalMedia(existingPost.media_url);
-    } else if (media_url && existingPost.media_url && existingPost.media_url.startsWith('/uploads/') && media_url !== existingPost.media_url) {
-      deleteLocalMedia(existingPost.media_url);
-    }
-
     if (normalizedMediaType !== normalizedExistingType) {
       const changingToVideo = normalizedMediaType === 'video';
-      if (changingToVideo && !media_url) {
-        return res.status(400).json({ message: 'Video posts require a media URL when changing type' });
+      if (changingToVideo && !media_url && !media_data) {
+        return res.status(400).json({ message: 'Video posts require a media file or URL when changing type' });
       }
       const changingToImage = normalizedMediaType !== 'video' && normalizedExistingType === 'video';
-      if (changingToImage && !media_url) {
+      if (changingToImage && !media_data) {
         return res.status(400).json({ message: 'Image posts require a file upload when changing type' });
       }
     }
@@ -193,6 +209,18 @@ export const updatePost = async (req, res) => {
     if (media_type) {
       query += `, media_type = $${paramCount}`;
       params.push(normalizedMediaType);
+      paramCount++;
+    }
+
+    if (media_data) {
+      query += `, media_data = $${paramCount}`;
+      params.push(media_data);
+      paramCount++;
+    }
+
+    if (media_mime_type) {
+      query += `, media_mime_type = $${paramCount}`;
+      params.push(media_mime_type);
       paramCount++;
     }
 

@@ -8,6 +8,7 @@ import { ContactProvider } from './contexts/ContactContext';
 import { BankingProvider } from './contexts/BankingContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
+import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import About from './pages/About';
 import Gallery from './pages/Gallery';
@@ -35,7 +36,8 @@ function App() {
         <ContactProvider>
           <BankingProvider>
             <AuthProvider>
-              <Router>
+              <Router future={{ v7_startTransition: true, v7_relativeSplatPath: true }}>
+                <ScrollToTop />
               <Routes>
                 {/* Admin routes without navbar/footer */}
                 <Route path="/admin/login" element={<Login />} />

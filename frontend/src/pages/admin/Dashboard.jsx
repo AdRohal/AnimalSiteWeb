@@ -335,6 +335,12 @@ const Dashboard = () => {
     setWatchIsPortrait(false);
   };
 
+  // Check if URL is a data URL (bytea media)
+  const isDataUrl = (url) => {
+    if (!url) return false;
+    return url.startsWith('data:');
+  };
+
   const autoplayEmbedUrl = (url) => {
     if (!url) return null;
     return `${url}${url.includes('?') ? '&' : '?'}autoplay=1`;
@@ -351,8 +357,9 @@ const Dashboard = () => {
   };
 
   const featuredVideo = posts.find((post) => post.media_type === 'video');
-  const watchEmbedUrl = watchingPost ? autoplayEmbedUrl(toEmbedUrl(watchingPost.media_url)) : null;
-  const watchIsFacebook = watchingPost ? isFacebookUrl(watchingPost.media_url) : false;
+  const watchIsDataUrl = watchingPost ? isDataUrl(watchingPost.media_url) : false;
+  const watchEmbedUrl = watchingPost && !watchIsDataUrl ? autoplayEmbedUrl(toEmbedUrl(watchingPost.media_url)) : null;
+  const watchIsFacebook = watchingPost && !watchIsDataUrl ? isFacebookUrl(watchingPost.media_url) : false;
   const watchModalTitle = watchingPost ? (language === 'ar' ? watchingPost.title_ar : watchingPost.title_en) : t('videosTitle');
 
   if (loading || postsLoading) {
@@ -826,7 +833,21 @@ const Dashboard = () => {
           </button>
           <div className="relative inline-flex rounded-3xl shadow-2xl overflow-hidden bg-white max-w-[90vw] z-10">
             <div className="relative bg-black p-3 flex items-center justify-center">
-              {watchEmbedUrl && !watchIsFacebook ? (
+              {watchIsDataUrl ? (
+                <div className="relative" style={{ width: 'min(90vw, 960px)', aspectRatio: '16 / 9' }}>
+                  <video
+                    src={watchingPost.media_url}
+                    className="absolute inset-0 w-full h-full object-contain rounded-xl"
+                    autoPlay
+                    controls
+                    playsInline
+                    onLoadedMetadata={(e) => {
+                      const v = e.target;
+                      setWatchIsPortrait(v.videoHeight > v.videoWidth);
+                    }}
+                  />
+                </div>
+              ) : watchEmbedUrl && !watchIsFacebook ? (
                 <div
                   className="relative"
                   style={{ width: 'min(90vw, 960px)', aspectRatio: '16 / 9' }}
@@ -1068,6 +1089,24 @@ const Dashboard = () => {
                 </div>
               </form>
             </div>
+          </div>
+        </div>
+      )}
+
+      {submitting && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
+          <div className="bg-white rounded-3xl shadow-2xl p-8 max-w-sm w-full mx-4 text-center">
+            <div className="flex justify-center mb-6">
+              <div className="animate-spin rounded-full h-16 w-16 border-4 border-primary-200 border-t-primary-600" />
+            </div>
+            <h3 className="text-2xl font-bold text-dark-700 mb-2">
+              {formData.media_type === 'video' ? 'Uploading Video...' : 'Uploading Image...'}
+            </h3>
+            <p className="text-dark-500 text-sm">
+              {formData.media_type === 'video'
+                ? 'Please wait while your video is being processed and saved to the database. This may take a moment for larger files...'
+                : 'Please wait while your image is being processed and saved to the database...'}
+            </p>
           </div>
         </div>
       )}
