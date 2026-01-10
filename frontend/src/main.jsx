@@ -9,6 +9,7 @@ import { BankingProvider } from './contexts/BankingContext';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
 import ScrollToTop from './components/ScrollToTop';
+import ProtectedRoute from './components/ProtectedRoute';
 import Home from './pages/Home';
 import About from './pages/About';
 import Gallery from './pages/Gallery';
@@ -17,6 +18,7 @@ import Contact from './pages/Contact';
 import Donations from './pages/Donations';
 import Login from './pages/admin/Login';
 import Dashboard from './pages/admin/Dashboard';
+import NotFound from './pages/NotFound';
 import './index.css';
 
 function App() {
@@ -41,7 +43,14 @@ function App() {
               <Routes>
                 {/* Admin routes without navbar/footer */}
                 <Route path="/admin/login" element={<Login />} />
-                <Route path="/admin/dashboard" element={<Dashboard />} />
+                <Route
+                  path="/admin/dashboard"
+                  element={
+                    <ProtectedRoute>
+                      <Dashboard />
+                    </ProtectedRoute>
+                  }
+                />
                 
                 {/* Public routes with navbar/footer */}
                 <Route
@@ -56,6 +65,8 @@ function App() {
                         <Route path="/videos" element={<Videos />} />
                         <Route path="/contact" element={<Contact />} />
                         <Route path="/donations" element={<Donations />} />
+                        <Route path="/not-found" element={<NotFound />} />
+                        <Route path="*" element={<NotFound />} />
                       </Routes>
                       <Footer />
                     </>
