@@ -26,7 +26,7 @@ const MediaCard = ({ post, onClick }) => {
       .catch(() => setYtTitle(null));
   }, [youtubeId]);
 
-  const title = ytTitle || defaultTitle || 'YouTube video';
+  const title = ytTitle || defaultTitle || (language === 'ar' ? 'فيديو يوتيوب' : language === 'fr' ? 'Vidéo YouTube' : 'YouTube video');
   const thumb = youtubeId ? `https://img.youtube.com/vi/${youtubeId}/hqdefault.jpg` : null;
 
   const handleCardClick = () => {

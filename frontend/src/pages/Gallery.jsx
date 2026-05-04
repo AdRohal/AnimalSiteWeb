@@ -104,15 +104,15 @@ const Gallery = () => {
 
           <div className="mt-7 flex justify-center">
             <div className="inline-flex items-center gap-2 bg-white border border-primary-200 rounded-2xl px-3 py-2 shadow-warm">
-              <label htmlFor="sort" className="text-sm font-semibold text-dark-600">Sort:</label>
+              <label htmlFor="sort" className="text-sm font-semibold text-dark-600">{t('sortBy')}:</label>
               <select
                 id="sort"
                 value={sortOrder}
                 onChange={(e) => setSortOrder(e.target.value)}
                 className="bg-secondary-50 border border-primary-100 rounded-xl px-3 py-2 text-sm font-medium text-dark-700 focus:outline-none focus:ring-2 focus:ring-primary-300"
               >
-                <option value="latest">Latest (YouTube date)</option>
-                <option value="oldest">Oldest (YouTube date)</option>
+                <option value="latest">{t('latestYoutube')}</option>
+                <option value="oldest">{t('oldestYoutube')}</option>
               </select>
             </div>
           </div>
@@ -121,7 +121,7 @@ const Gallery = () => {
         {loading ? (
           <div className="text-center py-12">
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 border-t-primary-600"></div>
-            <p className="text-dark-600 mt-4 text-lg">Loading gallery...</p>
+            <p className="text-dark-600 mt-4 text-lg">{t('loadingGallery')}</p>
           </div>
         ) : sortedPosts.length > 0 ? (
           <>
@@ -139,8 +139,8 @@ const Gallery = () => {
         ) : (
           <div className="text-center py-20 bg-white rounded-2xl shadow-warm-lg">
             <div className="text-8xl mb-4">📸</div>
-            <p className="text-2xl text-dark-600 font-semibold mb-2">No images or videos available yet.</p>
-            <p className="text-dark-500">Check back soon for updates!</p>
+            <p className="text-2xl text-dark-600 font-semibold mb-2">{t('noMediaYet')}</p>
+            <p className="text-dark-500">{t('checkBackSoon')}</p>
           </div>
         )}
       </div>
