@@ -1,7 +1,7 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, NavLink } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Menu, X, Languages } from 'lucide-react';
+import { Menu, X, Languages, HeartHandshake } from 'lucide-react';
 
 const Navbar = () => {
   const { language, toggleLanguage, t } = useLanguage();
@@ -17,96 +17,45 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="bg-white shadow-warm-lg sticky top-0 z-50 border-b-2 border-primary-100">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.png" alt="Animal Rescue logo" className="w-10 h-10 object-cover rounded-full shadow-warm" />
-            <div className={language === 'ar' ? 'text-right mr-2' : ''}>
-              <h1 className="font-bold text-lg text-primary-600">
-                {language === 'ar' ? 'جمعية إنقاذ الحيوانات' : 'Animal Rescue'}
-              </h1>
-              <p className="text-xs text-terracotta font-medium leading-tight">
-                {t('heroSubtitle')}
-              </p>
+    <header className="sticky top-0 z-50 px-3 pt-3">
+      <nav className="max-w-7xl mx-auto rounded-2xl border border-white/60 bg-white/85 backdrop-blur-xl shadow-warm-lg">
+        <div className="px-4 md:px-6 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/logo.png" alt="Animal Rescue logo" className="w-10 h-10 rounded-xl object-cover" />
+            <div>
+              <h1 className="font-bold text-primary-700 text-sm md:text-base">{language === 'ar' ? 'جمعية إنقاذ الحيوانات' : 'Animal Association'}</h1>
             </div>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="text-dark-600 hover:text-primary-600 font-medium text-sm transition-colors relative group px-3 py-2"
-              >
+              <NavLink key={link.path} to={link.path} className={({isActive}) => `px-3 py-2 rounded-xl text-sm font-medium transition ${isActive ? 'bg-primary-100 text-primary-700' : 'text-dark-600 hover:bg-secondary-100'}`}>
                 {link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 transition-all duration-300 group-hover:w-full"></span>
-              </Link>
+              </NavLink>
             ))}
-            
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center space-x-1 px-3 py-1.5 bg-secondary-100 hover:bg-secondary-200 rounded-lg transition-all duration-300 border border-primary-200 text-sm"
-            >
-              <Languages size={16} className="text-primary-600" />
-              <span className="font-medium text-dark-700">{language === 'en' ? 'AR' : 'EN'}</span>
-            </button>
-
-            <Link
-              to="/admin/login"
-              className="btn-primary text-sm px-3 py-1.5"
-            >
-              {t('admin')}
-            </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-gray-700"
-          >
-            {isOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+          <div className="hidden md:flex items-center gap-2">
+            <button onClick={toggleLanguage} className="px-3 py-2 rounded-xl bg-secondary-100 hover:bg-secondary-200 text-sm flex items-center gap-1">
+              <Languages size={16} className="text-primary-600" />
+              <span>{language === 'en' ? 'AR' : 'EN'}</span>
+            </button>
+            <Link to="/donations" className="btn-primary text-sm py-2 px-4 inline-flex items-center gap-2"><HeartHandshake size={16}/> Support</Link>
+          </div>
+
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-dark-700">{isOpen ? <X size={22} /> : <Menu size={22} />}</button>
         </div>
 
-        {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden py-3 border-t">
+          <div className="md:hidden border-t border-primary-100 px-4 pb-4 pt-2 space-y-1">
             {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className="block py-2 text-gray-700 hover:text-primary font-medium text-sm transition-colors"
-              >
-                {link.label}
-              </Link>
+              <Link key={link.path} to={link.path} onClick={() => setIsOpen(false)} className="block py-2 px-2 rounded-lg text-dark-700 hover:bg-secondary-100">{link.label}</Link>
             ))}
-            
-            <button
-              onClick={() => {
-                toggleLanguage();
-                setIsOpen(false);
-              }}
-              className="w-full mt-2 px-3 py-2 bg-secondary hover:bg-secondary-dark rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm"
-            >
-              <Languages size={16} />
-              <span className="font-medium">{language === 'en' ? 'العربية' : 'English'}</span>
-            </button>
-
-            <Link
-              to="/admin/login"
-              onClick={() => setIsOpen(false)}
-              className="block mt-2 text-center btn-primary text-sm py-2"
-            >
-              {t('admin')}
-            </Link>
+            <button onClick={() => { toggleLanguage(); setIsOpen(false); }} className="w-full py-2 rounded-lg bg-secondary-100">{language === 'en' ? 'العربية' : 'English'}</button>
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 

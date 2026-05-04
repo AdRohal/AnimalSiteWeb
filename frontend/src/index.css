@@ -14,8 +14,12 @@
 
 body {
   font-family: 'Poppins', sans-serif;
-  background: linear-gradient(to bottom, #F5EFE6 0%, #FAF6EF 100%);
+  background: radial-gradient(circle at top right, #f8e6dc 0%, #F5EFE6 35%, #FAF6EF 100%);
   color: #2C3E50;
+  min-height: 100vh;
+}
+
+#root {
   min-height: 100vh;
 }
 
