@@ -90,7 +90,7 @@ const Gallery = () => {
     return [...posts].sort((a, b) => {
       const aVal = a.ytPublishedAt ? new Date(a.ytPublishedAt).getTime() : a.created_at ? new Date(a.created_at).getTime() : Number(a.id) || 0;
       const bVal = b.ytPublishedAt ? new Date(b.ytPublishedAt).getTime() : b.created_at ? new Date(b.created_at).getTime() : Number(b.id) || 0;
-      return sortOrder === 'latest' ? bVal - aVal : aVal - bVal;
+      return sortOrder === 'latest' ? aVal - bVal : bVal - aVal;
     });
   }, [posts, sortOrder]);
 
