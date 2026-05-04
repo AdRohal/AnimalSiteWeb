@@ -32,7 +32,7 @@ const Home = () => {
             <p className="text-dark-500 mt-4 text-lg">A modern, transparent look at our daily rescue work, shelter care, and community impact.</p>
             <div className="mt-7 flex flex-col sm:flex-row gap-3">
               <Link to="/donations" className="btn-primary inline-flex items-center justify-center gap-2">Support via PayPal <ArrowUpRight size={16} /></Link>
-              <a href="tel:+15552367788" className="btn-secondary inline-flex items-center justify-center gap-2"><Phone size={16}/> Call to Help</a>
+              <a href="tel:+212684332442" className="btn-secondary inline-flex items-center justify-center gap-2"><Phone size={16}/> Call to Help</a>
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
