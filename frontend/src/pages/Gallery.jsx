@@ -1,8 +1,29 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import api from '../utils/api';
 import MediaCard from '../components/MediaCard';
 import { fallbackPosts } from '../utils/fallbackData';
+
+const getYoutubeId = (url) => {
+  try {
+    const u = new URL(url);
+    if (u.hostname.includes('youtu.be')) return u.pathname.slice(1);
+    return u.searchParams.get('v');
+  } catch {
+    return null;
+  }
+};
+
+const getYoutubePublishedAt = async (videoId) => {
+  if (!videoId) return null;
+  try {
+    const res = await fetch(`https://yt.lemnoslife.com/noKey/videos?part=snippet&id=${videoId}`);
+    const data = await res.json();
+    return data?.items?.[0]?.snippet?.publishedAt || null;
+  } catch {
+    return null;
+  }
+};
 
 const Gallery = () => {
   const { t } = useLanguage();
@@ -17,6 +38,18 @@ const Gallery = () => {
     fetchPosts();
   }, []);
 
+  const enrichVideoDates = async (items) => {
+    const enriched = await Promise.all(
+      items.map(async (post) => {
+        if (post.media_type !== 'video') return post;
+        const id = getYoutubeId(post.media_url);
+        const ytPublishedAt = await getYoutubePublishedAt(id);
+        return { ...post, ytPublishedAt };
+      })
+    );
+    return enriched;
+  };
+
   const fetchPosts = async (loadMore = false) => {
     try {
       const currentOffset = loadMore ? offset : 0;
@@ -24,15 +57,17 @@ const Gallery = () => {
       const incoming = response.data.posts || [];
 
       if (!incoming.length && !loadMore) {
-        setPosts(fallbackPosts);
+        const enrichedFallback = await enrichVideoDates(fallbackPosts);
+        setPosts(enrichedFallback);
         setHasMore(false);
         return;
       }
 
+      const enrichedIncoming = await enrichVideoDates(incoming);
       if (loadMore) {
-        setPosts([...posts, ...incoming]);
+        setPosts([...posts, ...enrichedIncoming]);
       } else {
-        setPosts(incoming);
+        setPosts(enrichedIncoming);
       }
 
       setOffset(currentOffset + limit);
@@ -40,7 +75,8 @@ const Gallery = () => {
     } catch (error) {
       console.error('Error fetching posts:', error);
       if (!loadMore) {
-        setPosts(fallbackPosts);
+        const enrichedFallback = await enrichVideoDates(fallbackPosts);
+        setPosts(enrichedFallback);
         setHasMore(false);
       }
     } finally {
@@ -48,15 +84,15 @@ const Gallery = () => {
     }
   };
 
-  const handleLoadMore = () => {
-    fetchPosts(true);
-  };
+  const handleLoadMore = () => fetchPosts(true);
 
-  const sortedPosts = [...posts].sort((a, b) => {
-    const aVal = a.created_at ? new Date(a.created_at).getTime() : Number(a.id) || 0;
-    const bVal = b.created_at ? new Date(b.created_at).getTime() : Number(b.id) || 0;
-    return sortOrder === 'latest' ? bVal - aVal : aVal - bVal;
-  });
+  const sortedPosts = useMemo(() => {
+    return [...posts].sort((a, b) => {
+      const aVal = a.ytPublishedAt ? new Date(a.ytPublishedAt).getTime() : a.created_at ? new Date(a.created_at).getTime() : Number(a.id) || 0;
+      const bVal = b.ytPublishedAt ? new Date(b.ytPublishedAt).getTime() : b.created_at ? new Date(b.created_at).getTime() : Number(b.id) || 0;
+      return sortOrder === 'latest' ? bVal - aVal : aVal - bVal;
+    });
+  }, [posts, sortOrder]);
 
   return (
     <div className="min-h-screen py-12 bg-gradient-to-b from-secondary-50 to-white">
@@ -65,15 +101,20 @@ const Gallery = () => {
           <h1 className="text-5xl md:text-6xl font-bold text-dark-700 mb-4">{t('galleryTitle')}</h1>
           <div className="w-24 h-1 bg-gradient-to-r from-primary-400 to-primary-600 mx-auto mb-6 rounded-full"></div>
           <p className="text-xl text-dark-500">{t('gallerySubtitle')}</p>
-          <div className="mt-6 flex justify-center">
-            <select
-              value={sortOrder}
-              onChange={(e) => setSortOrder(e.target.value)}
-              className="input-field max-w-xs"
-            >
-              <option value="latest">Latest</option>
-              <option value="oldest">Oldest</option>
-            </select>
+
+          <div className="mt-7 flex justify-center">
+            <div className="inline-flex items-center gap-2 bg-white border border-primary-200 rounded-2xl px-3 py-2 shadow-warm">
+              <label htmlFor="sort" className="text-sm font-semibold text-dark-600">Sort:</label>
+              <select
+                id="sort"
+                value={sortOrder}
+                onChange={(e) => setSortOrder(e.target.value)}
+                className="bg-secondary-50 border border-primary-100 rounded-xl px-3 py-2 text-sm font-medium text-dark-700 focus:outline-none focus:ring-2 focus:ring-primary-300"
+              >
+                <option value="latest">Latest (YouTube date)</option>
+                <option value="oldest">Oldest (YouTube date)</option>
+              </select>
+            </div>
           </div>
         </div>
 
@@ -82,19 +123,16 @@ const Gallery = () => {
             <div className="inline-block animate-spin rounded-full h-16 w-16 border-4 border-primary-200 border-t-primary-600"></div>
             <p className="text-dark-600 mt-4 text-lg">Loading gallery...</p>
           </div>
-        ) : posts.length > 0 ? (
+        ) : sortedPosts.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {sortedPosts.map((post) => (
                 <MediaCard key={post.id} post={post} />
               ))}
             </div>
-
             {hasMore && (
               <div className="text-center mt-12">
-                <button onClick={handleLoadMore} className="btn-primary">
-                  {t('loadMore')}
-                </button>
+                <button onClick={handleLoadMore} className="btn-primary">{t('loadMore')}</button>
               </div>
             )}
           </>
