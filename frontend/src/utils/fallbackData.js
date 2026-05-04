@@ -23,4 +23,10 @@ export const fallbackPosts = [
   { id: 5, media_type: 'video', media_url: 'https://youtu.be/e8M5NbadEPU?si=rHCrHmv4Feqdn6H1', title_en: 'YouTube Video', title_ar: 'فيديو يوتيوب' },
   { id: 6, media_type: 'video', media_url: 'https://youtu.be/sGWL20Rb77M?si=sAgk_A47FV7PrqAJ', title_en: 'YouTube Video', title_ar: 'فيديو يوتيوب' },
   { id: 7, media_type: 'video', media_url: 'https://youtu.be/oupdhjfJFaY?si=A6cvnC_JWMXgxcGP', title_en: 'YouTube Video', title_ar: 'فيديو يوتيوب' },
+
+  { id: 8, media_type: 'video', media_url: 'https://youtu.be/s717VROlfPA?si=_pU3rFLzi3O-yw2v', title_en: 'YouTube Video', title_ar: 'فيديو يوتيوب' },
+  { id: 9, media_type: 'video', media_url: 'https://youtu.be/55y_tcnd85A?si=s_S0VZC7S167UqmT', title_en: 'YouTube Video', title_ar: 'فيديو يوتيوب' },
+  { id: 10, media_type: 'video', media_url: 'https://youtu.be/MyjtEDSVV3o?si=7Yua0Z8tYkHew66W', title_en: 'YouTube Video', title_ar: 'فيديو يوتيوب' },
+  { id: 11, media_type: 'video', media_url: 'https://youtu.be/wAoHlTZwg7g?si=vhzOs4gupqFFvjRf', title_en: 'YouTube Video', title_ar: 'فيديو يوتيوب' },
+  { id: 12, media_type: 'video', media_url: 'https://youtu.be/VhazUVR5IiQ?si=pMSf5MV6tOOq1T_l', title_en: 'YouTube Video', title_ar: 'فيديو يوتيوب' },
 ];

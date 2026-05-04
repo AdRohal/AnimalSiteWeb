@@ -10,6 +10,7 @@ const Gallery = () => {
   const [loading, setLoading] = useState(true);
   const [offset, setOffset] = useState(0);
   const [hasMore, setHasMore] = useState(true);
+  const [sortOrder, setSortOrder] = useState('latest');
   const limit = 12;
 
   useEffect(() => {
@@ -51,6 +52,12 @@ const Gallery = () => {
     fetchPosts(true);
   };
 
+  const sortedPosts = [...posts].sort((a, b) => {
+    const aVal = a.created_at ? new Date(a.created_at).getTime() : Number(a.id) || 0;
+    const bVal = b.created_at ? new Date(b.created_at).getTime() : Number(b.id) || 0;
+    return sortOrder === 'latest' ? bVal - aVal : aVal - bVal;
+  });
+
   return (
     <div className="min-h-screen py-12 bg-gradient-to-b from-secondary-50 to-white">
       <div className="container mx-auto px-4">
@@ -58,6 +65,16 @@ const Gallery = () => {
           <h1 className="text-5xl md:text-6xl font-bold text-dark-700 mb-4">{t('galleryTitle')}</h1>
           <div className="w-24 h-1 bg-gradient-to-r from-primary-400 to-primary-600 mx-auto mb-6 rounded-full"></div>
           <p className="text-xl text-dark-500">{t('gallerySubtitle')}</p>
+          <div className="mt-6 flex justify-center">
+            <select
+              value={sortOrder}
+              onChange={(e) => setSortOrder(e.target.value)}
+              className="input-field max-w-xs"
+            >
+              <option value="latest">Latest</option>
+              <option value="oldest">Oldest</option>
+            </select>
+          </div>
         </div>
 
         {loading ? (
@@ -68,7 +85,7 @@ const Gallery = () => {
         ) : posts.length > 0 ? (
           <>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-              {posts.map((post) => (
+              {sortedPosts.map((post) => (
                 <MediaCard key={post.id} post={post} />
               ))}
             </div>
