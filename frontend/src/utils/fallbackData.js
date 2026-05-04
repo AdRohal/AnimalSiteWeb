@@ -39,10 +39,12 @@ export const fallbackPosts = [
   {
     id: 3,
     media_type: 'video',
-    media_url: 'https://www.youtube.com/watch?v=Fq1Aq1_UNgQ',
-    title_en: 'Volunteer highlights',
-    title_ar: 'أبرز أعمال المتطوعين',
-    description_en: 'A short story of how volunteers create safer lives for animals.',
-    description_ar: 'قصة قصيرة عن دور المتطوعين في تحسين حياة الحيوانات.',
+    media_url: 'https://youtu.be/AC2QGFbLQyA?si=Nx3jXxsV0B8GDquS',
+    title_en: 'Rescue video 1',
+    title_ar: 'فيديو إنقاذ 1',
   },
+  { id: 4, media_type: 'video', media_url: 'https://youtu.be/Zf84tGTrNig?si=DHS4YERORs0wkBk9', title_en: 'Rescue video 2', title_ar: 'فيديو إنقاذ 2' },
+  { id: 5, media_type: 'video', media_url: 'https://youtu.be/e8M5NbadEPU?si=rHCrHmv4Feqdn6H1', title_en: 'Rescue video 3', title_ar: 'فيديو إنقاذ 3' },
+  { id: 6, media_type: 'video', media_url: 'https://youtu.be/sGWL20Rb77M?si=sAgk_A47FV7PrqAJ', title_en: 'Rescue video 4', title_ar: 'فيديو إنقاذ 4' },
+  { id: 7, media_type: 'video', media_url: 'https://youtu.be/oupdhjfJFaY?si=A6cvnC_JWMXgxcGP', title_en: 'Rescue video 5', title_ar: 'فيديو إنقاذ 5' },
 ];
