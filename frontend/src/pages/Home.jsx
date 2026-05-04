@@ -37,7 +37,7 @@ const Home = () => {
           </div>
           <div className="grid grid-cols-2 gap-4">
             <img src="/logo.png" alt="logo" className="rounded-2xl bg-white p-4 shadow-warm h-40 w-full object-contain" />
-            <div className="rounded-2xl bg-dark-900 text-white p-5"><p className="text-sm text-white/70">Animals rescued</p><p className="text-4xl font-bold">500+</p></div>
+            <div className="rounded-2xl bg-white p-5 shadow-warm border border-primary-100"><p className="text-sm text-dark-500">Animals rescued</p><p className="text-4xl font-bold text-primary-700">500+</p></div>
             <div className="col-span-2 rounded-2xl bg-white/90 border border-primary-100 p-5">
               <p className="text-dark-500 mb-3">Support options</p>
               <div className="flex flex-wrap gap-2 text-sm">
