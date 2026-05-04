@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import api from '../utils/api';
+import { fallbackBanking } from '../utils/fallbackData';
 
 const BankingContext = createContext();
 
@@ -16,9 +17,10 @@ export const BankingProvider = ({ children }) => {
   const loadBanking = useCallback(async () => {
     try {
       const response = await api.get('/banking-info');
-      setBanking(response.data.banking || {});
+      setBanking(response.data.banking || fallbackBanking);
     } catch (error) {
-      console.error('Failed to load banking info', error);
+      console.warn('Using fallback donation info for frontend-only mode.');
+      setBanking(fallbackBanking);
     } finally {
       setLoading(false);
     }
@@ -28,16 +30,7 @@ export const BankingProvider = ({ children }) => {
     loadBanking();
   }, [loadBanking]);
 
-  const saveBanking = async (payload) => {
-    try {
-      await api.put('/banking-info', payload);
-      await loadBanking();
-      return { success: true };
-    } catch (error) {
-      const message = error.response?.data?.message || 'Unable to save banking info';
-      return { success: false, message };
-    }
-  };
+  const saveBanking = async () => ({ success: false, message: 'Frontend-only mode' });
 
   return (
     <BankingContext.Provider value={{ banking, loading, saveBanking, reload: loadBanking }}>

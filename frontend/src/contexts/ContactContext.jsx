@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import api from '../utils/api';
+import { fallbackContact } from '../utils/fallbackData';
 
 const ContactContext = createContext();
 
@@ -16,9 +17,10 @@ export const ContactProvider = ({ children }) => {
   const loadContact = useCallback(async () => {
     try {
       const response = await api.get('/contact-info');
-      setContact(response.data.contact || {});
+      setContact(response.data.contact || fallbackContact);
     } catch (error) {
-      console.error('Failed to load contact info', error);
+      console.warn('Using fallback contact info for frontend-only mode.');
+      setContact(fallbackContact);
     } finally {
       setLoading(false);
     }
@@ -28,16 +30,7 @@ export const ContactProvider = ({ children }) => {
     loadContact();
   }, [loadContact]);
 
-  const saveContact = async (payload) => {
-    try {
-      await api.put('/contact-info', payload);
-      await loadContact();
-      return { success: true };
-    } catch (error) {
-      const message = error.response?.data?.message || 'Unable to save contact info';
-      return { success: false, message };
-    }
-  };
+  const saveContact = async () => ({ success: false, message: 'Frontend-only mode' });
 
   return (
     <ContactContext.Provider value={{ contact, loading, saveContact, reload: loadContact }}>
