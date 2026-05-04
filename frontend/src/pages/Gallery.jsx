@@ -18,7 +18,7 @@ const Gallery = () => {
   const fetchPosts = async (loadMore = false) => {
     try {
       const currentOffset = loadMore ? offset : 0;
-      const response = await api.get(`/posts?media_type=image&published=true&limit=${limit}&offset=${currentOffset}`);
+      const response = await api.get(`/posts?published=true&limit=${limit}&offset=${currentOffset}`);
       
       if (loadMore) {
         setPosts([...posts, ...response.data.posts]);

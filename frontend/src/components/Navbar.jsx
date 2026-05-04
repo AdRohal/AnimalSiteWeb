@@ -11,7 +11,6 @@ const Navbar = () => {
     { path: '/', label: t('home') },
     { path: '/about', label: t('about') },
     { path: '/gallery', label: t('gallery') },
-    { path: '/videos', label: t('videos') },
     { path: '/contact', label: t('contact') },
     { path: '/donations', label: t('donations') },
   ];

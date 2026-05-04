@@ -11,7 +11,6 @@ import ScrollToTop from './components/ScrollToTop';
 import Home from './pages/Home';
 import About from './pages/About';
 import Gallery from './pages/Gallery';
-import Videos from './pages/Videos';
 import Contact from './pages/Contact';
 import Donations from './pages/Donations';
 import NotFound from './pages/NotFound';
@@ -38,7 +37,6 @@ function App() {
                 <Route path="/" element={<Home />} />
                 <Route path="/about" element={<About />} />
                 <Route path="/gallery" element={<Gallery />} />
-                <Route path="/videos" element={<Videos />} />
                 <Route path="/contact" element={<Contact />} />
                 <Route path="/donations" element={<Donations />} />
                 <Route path="*" element={<NotFound />} />

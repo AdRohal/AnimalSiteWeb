@@ -1,6 +1,24 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { ArrowUpRight, HeartHandshake, Phone, PawPrint, ShieldCheck, Stethoscope } from 'lucide-react';
+import { ArrowUpRight, HeartHandshake, Phone, PawPrint, ShieldCheck, Stethoscope, PlayCircle } from 'lucide-react';
+
+const youtubeVideos = [
+  'https://youtu.be/AC2QGFbLQyA?si=Nx3jXxsV0B8GDquS',
+  'https://youtu.be/Zf84tGTrNig?si=DHS4YERORs0wkBk9',
+  'https://youtu.be/e8M5NbadEPU?si=rHCrHmv4Feqdn6H1',
+  'https://youtu.be/sGWL20Rb77M?si=sAgk_A47FV7PrqAJ',
+  'https://youtu.be/oupdhjfJFaY?si=A6cvnC_JWMXgxcGP',
+];
+
+const toEmbed = (url) => {
+  try {
+    const u = new URL(url);
+    const id = u.pathname.includes('/watch') ? u.searchParams.get('v') : u.pathname.split('/').pop();
+    return `https://www.youtube.com/embed/${id}`;
+  } catch {
+    return url;
+  }
+};
 
 const Home = () => {
   return (
@@ -40,6 +58,21 @@ const Home = () => {
             <p className="text-sm text-dark-500 mt-1">{item.text}</p>
           </article>
         ))}
+      </section>
+
+      <section className="max-w-7xl mx-auto rounded-3xl bg-white border border-primary-100 p-6 md:p-8 shadow-warm">
+        <div className="flex items-center justify-between mb-5">
+          <h2 className="text-2xl md:text-3xl font-bold text-dark-800">Rescue Videos</h2>
+          <PlayCircle className="text-primary-600" />
+        </div>
+        <div className="grid md:grid-cols-3 gap-4">
+          {youtubeVideos.slice(0, 3).map((video) => (
+            <iframe key={video} className="w-full aspect-video rounded-2xl border border-primary-100" src={toEmbed(video)} title="association video" allowFullScreen />
+          ))}
+        </div>
+        <div className="text-center mt-6">
+          <Link to="/gallery" className="btn-primary">View all videos & photos in gallery</Link>
+        </div>
       </section>
 
       <section className="max-w-7xl mx-auto rounded-[28px] bg-dark-900 text-white p-8 md:p-10 grid lg:grid-cols-2 gap-8 items-center">
