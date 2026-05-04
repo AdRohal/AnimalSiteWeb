@@ -37,7 +37,7 @@ const Navbar = () => {
           <div className="hidden md:flex items-center gap-2">
             <button onClick={toggleLanguage} className="px-3 py-2 rounded-xl bg-secondary-100 hover:bg-secondary-200 text-sm flex items-center gap-1">
               <Languages size={16} className="text-primary-600" />
-              <span>{language === 'en' ? 'AR' : 'EN'}</span>
+              <span>{language === 'en' ? 'AR' : language === 'ar' ? 'FR' : 'EN'}</span>
             </button>
             <Link to="/donations" className="btn-primary text-sm py-2 px-4 inline-flex items-center gap-2"><HeartHandshake size={16}/> Support</Link>
           </div>
@@ -50,7 +50,7 @@ const Navbar = () => {
             {navLinks.map((link) => (
               <Link key={link.path} to={link.path} onClick={() => setIsOpen(false)} className="block py-2 px-2 rounded-lg text-dark-700 hover:bg-secondary-100">{link.label}</Link>
             ))}
-            <button onClick={() => { toggleLanguage(); setIsOpen(false); }} className="w-full py-2 rounded-lg bg-secondary-100">{language === 'en' ? 'العربية' : 'English'}</button>
+            <button onClick={() => { toggleLanguage(); setIsOpen(false); }} className="w-full py-2 rounded-lg bg-secondary-100">{language === 'en' ? 'العربية' : language === 'ar' ? 'Français' : 'English'}</button>
           </div>
         )}
       </nav>
