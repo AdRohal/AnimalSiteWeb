@@ -15,15 +15,8 @@ export const SocialProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const loadLinks = useCallback(async () => {
-    try {
-      const response = await api.get('/social-links');
-      setLinks(response.data.links || fallbackSocialLinks);
-    } catch (error) {
-      console.warn('Using fallback social links for frontend-only mode.');
-      setLinks(fallbackSocialLinks);
-    } finally {
-      setLoading(false);
-    }
+    setLinks(fallbackSocialLinks);
+    setLoading(false);
   }, []);
 
   useEffect(() => {

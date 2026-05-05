@@ -15,15 +15,8 @@ export const BankingProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const loadBanking = useCallback(async () => {
-    try {
-      const response = await api.get('/banking-info');
-      setBanking(response.data.banking || fallbackBanking);
-    } catch (error) {
-      console.warn('Using fallback donation info for frontend-only mode.');
-      setBanking(fallbackBanking);
-    } finally {
-      setLoading(false);
-    }
+    setBanking(fallbackBanking);
+    setLoading(false);
   }, []);
 
   useEffect(() => {

@@ -15,15 +15,8 @@ export const ContactProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const loadContact = useCallback(async () => {
-    try {
-      const response = await api.get('/contact-info');
-      setContact(response.data.contact || fallbackContact);
-    } catch (error) {
-      console.warn('Using fallback contact info for frontend-only mode.');
-      setContact(fallbackContact);
-    } finally {
-      setLoading(false);
-    }
+    setContact(fallbackContact);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
