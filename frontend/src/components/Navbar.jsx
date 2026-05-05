@@ -1,112 +1,123 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState, useRef, useEffect } from 'react';
+import { Link, NavLink } from 'react-router-dom';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Menu, X, Languages } from 'lucide-react';
+import { Menu, X, Languages, HeartHandshake, ChevronDown } from 'lucide-react';
 
 const Navbar = () => {
-  const { language, toggleLanguage, t } = useLanguage();
-  const [isOpen, setIsOpen] = React.useState(false);
+  const { language, setLanguage, t } = useLanguage();
+  const [isOpen, setIsOpen] = useState(false);
+  const [langDropdownOpen, setLangDropdownOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setLangDropdownOpen(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const navLinks = [
     { path: '/', label: t('home') },
     { path: '/about', label: t('about') },
     { path: '/gallery', label: t('gallery') },
-    { path: '/videos', label: t('videos') },
     { path: '/contact', label: t('contact') },
     { path: '/donations', label: t('donations') },
   ];
 
   return (
-    <nav className="bg-white shadow-warm-lg sticky top-0 z-50 border-b-2 border-primary-100">
-      <div className="container mx-auto px-4">
-        <div className="flex justify-between items-center h-16">
-          {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
-            <img src="/logo.png" alt="Animal Rescue logo" className="w-10 h-10 object-cover rounded-full shadow-warm" />
-            <div className={language === 'ar' ? 'text-right mr-2' : ''}>
-              <h1 className="font-bold text-lg text-primary-600">
-                {language === 'ar' ? 'جمعية إنقاذ الحيوانات' : 'Animal Rescue'}
-              </h1>
-              <p className="text-xs text-terracotta font-medium leading-tight">
-                {t('heroSubtitle')}
-              </p>
+    <header className="sticky top-0 z-50 px-3 pt-3">
+      <nav className="max-w-7xl mx-auto rounded-[24px] border border-white/60 bg-white/85 backdrop-blur-xl shadow-warm-lg">
+        <div className="px-4 md:px-6 h-16 flex items-center justify-between">
+          <Link to="/" className="flex items-center gap-3">
+            <img src="/logo.png" alt="Animal Rescue logo" className="w-10 h-10 rounded-xl object-cover" />
+            <div>
+              <h1 className="font-extrabold text-dark-800 text-sm md:text-base">{language === 'ar' ? 'جمعية إنقاذ الحيوانات' : 'Animal Association'}</h1>
             </div>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                className="text-dark-600 hover:text-primary-600 font-medium text-sm transition-colors relative group px-3 py-2"
-              >
+              <NavLink key={link.path} to={link.path} className={({isActive}) => `px-4 py-2 rounded-xl text-sm font-bold transition-all ${isActive ? 'bg-primary-100 text-primary-700' : 'text-dark-600 hover:bg-secondary-100 hover:text-dark-800'}`}>
                 {link.label}
-                <span className="absolute bottom-0 left-0 w-0 h-0.5 bg-primary-500 transition-all duration-300 group-hover:w-full"></span>
-              </Link>
+              </NavLink>
             ))}
-            
-            <button
-              onClick={toggleLanguage}
-              className="flex items-center space-x-1 px-3 py-1.5 bg-secondary-100 hover:bg-secondary-200 rounded-lg transition-all duration-300 border border-primary-200 text-sm"
-            >
-              <Languages size={16} className="text-primary-600" />
-              <span className="font-medium text-dark-700">{language === 'en' ? 'AR' : 'EN'}</span>
-            </button>
+          </div>
 
-            <Link
-              to="/admin/login"
-              className="btn-primary text-sm px-3 py-1.5"
-            >
-              {t('admin')}
+          <div className="hidden md:flex items-center gap-3">
+            <div className="relative" ref={dropdownRef}>
+              <button 
+                onClick={() => setLangDropdownOpen(!langDropdownOpen)} 
+                className="px-3 py-2.5 rounded-xl bg-white hover:bg-secondary-50 border border-white/80 shadow-sm text-sm flex items-center gap-2 transition-all font-bold text-dark-700"
+              >
+                <Languages size={18} className="text-primary-600" />
+                <span className="uppercase">{language}</span>
+                <ChevronDown size={16} className={`text-dark-400 transition-transform ${langDropdownOpen ? 'rotate-180' : ''}`} />
+              </button>
+              
+              {langDropdownOpen && (
+                <div className="absolute right-0 top-full mt-2 w-36 glass-panel border border-white/80 rounded-2xl py-2 flex flex-col z-50 shadow-lg animate-fade-in origin-top-right">
+                  {[
+                    { code: 'en', label: 'English' },
+                    { code: 'ar', label: 'العربية' },
+                    { code: 'fr', label: 'Français' },
+                  ].map((lang) => (
+                    <button 
+                      key={lang.code}
+                      onClick={() => { setLanguage(lang.code); setLangDropdownOpen(false); }} 
+                      className={`px-4 py-2.5 text-left text-sm font-bold hover:bg-primary-50 transition-colors ${language === lang.code ? 'text-primary-600 bg-primary-50/50' : 'text-dark-600'}`}
+                    >
+                      {lang.label}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+            
+            <Link to="/donations" className="glass-button bg-primary-500 text-white hover:bg-primary-600 border-primary-400 text-sm py-2.5 px-5 flex items-center gap-2 shadow-md">
+              <HeartHandshake size={18}/> Support
             </Link>
           </div>
 
-          {/* Mobile Menu Button */}
-          <button
-            onClick={() => setIsOpen(!isOpen)}
-            className="md:hidden text-gray-700"
-          >
+          <button onClick={() => setIsOpen(!isOpen)} className="md:hidden text-dark-700 p-2 bg-white/60 rounded-xl border border-white/80">
             {isOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
         </div>
 
-        {/* Mobile Menu */}
         {isOpen && (
-          <div className="md:hidden py-3 border-t">
-            {navLinks.map((link) => (
-              <Link
-                key={link.path}
-                to={link.path}
-                onClick={() => setIsOpen(false)}
-                className="block py-2 text-gray-700 hover:text-primary font-medium text-sm transition-colors"
-              >
-                {link.label}
-              </Link>
-            ))}
+          <div className="md:hidden border-t border-white/40 px-4 pb-4 pt-3 space-y-2 bg-white/40 rounded-b-[24px]">
+            <div className="space-y-1 mb-4">
+              {navLinks.map((link) => (
+                <Link key={link.path} to={link.path} onClick={() => setIsOpen(false)} className="block py-3 px-4 rounded-xl text-dark-700 font-bold hover:bg-white/60">
+                  {link.label}
+                </Link>
+              ))}
+            </div>
             
-            <button
-              onClick={() => {
-                toggleLanguage();
-                setIsOpen(false);
-              }}
-              className="w-full mt-2 px-3 py-2 bg-secondary hover:bg-secondary-dark rounded-lg flex items-center justify-center space-x-2 transition-colors text-sm"
-            >
-              <Languages size={16} />
-              <span className="font-medium">{language === 'en' ? 'العربية' : 'English'}</span>
-            </button>
-
-            <Link
-              to="/admin/login"
-              onClick={() => setIsOpen(false)}
-              className="block mt-2 text-center btn-primary text-sm py-2"
-            >
-              {t('admin')}
-            </Link>
+            <div className="border-t border-white/40 pt-4">
+              <p className="px-4 text-xs font-bold text-dark-400 uppercase tracking-wider mb-2">Language</p>
+              <div className="grid grid-cols-3 gap-2">
+                {[
+                  { code: 'en', label: 'English' },
+                  { code: 'ar', label: 'العربية' },
+                  { code: 'fr', label: 'Français' },
+                ].map((lang) => (
+                  <button 
+                    key={lang.code}
+                    onClick={() => { setLanguage(lang.code); setIsOpen(false); }} 
+                    className={`py-2 px-3 rounded-xl text-sm font-bold text-center transition-colors ${language === lang.code ? 'bg-primary-100 text-primary-700 border border-primary-200' : 'bg-white/60 text-dark-600 border border-white/80 hover:bg-white'}`}
+                  >
+                    {lang.label}
+                  </button>
+                ))}
+              </div>
+            </div>
           </div>
         )}
-      </div>
-    </nav>
+      </nav>
+    </header>
   );
 };
 
