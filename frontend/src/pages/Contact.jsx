@@ -5,11 +5,10 @@ import { useSocial } from '../contexts/SocialContext';
 import { Mail, Phone, MapPin, MessageCircle, Facebook, Instagram, Twitter, Youtube, Music, ExternalLink } from 'lucide-react';
 
 const Contact = () => {
-  const { t, language } = useLanguage();
+  const { t } = useLanguage();
   const { contact, loading: contactLoading } = useContact();
   const { getLink } = useSocial();
 
-  // Get social links
   const socials = [
     { platform: 'facebook', Icon: Facebook, label: 'Facebook', url: getLink('facebook') },
     { platform: 'instagram', Icon: Instagram, label: 'Instagram', url: getLink('instagram') },
@@ -19,10 +18,10 @@ const Contact = () => {
   ].filter((item) => !!item.url);
 
   return (
-    <div className="min-h-screen py-12 bg-gradient-to-b from-secondary-50 to-white">
-      <div className="container mx-auto px-4">
+    <div className="py-12 px-4 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto">
         {/* Header */}
-        <div className="text-center mb-12 fade-in">
+        <div className="text-center mb-16 fade-in">
           <h1 className="text-5xl md:text-6xl font-bold text-dark-700 mb-4">{t('contactTitle')}</h1>
           <div className="w-24 h-1 bg-gradient-to-r from-primary-400 to-primary-600 mx-auto mb-6 rounded-full"></div>
           <p className="text-xl text-dark-500">{t('contactSubtitle')}</p>
@@ -34,56 +33,53 @@ const Contact = () => {
             <p className="text-dark-600 mt-4">Loading contact information...</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
             {/* Contact Info */}
-            <div className="space-y-8 fade-in">
-              <div className="bg-white rounded-2xl shadow-warm-lg p-8 border border-primary-100">
-                <h2 className="text-3xl font-bold text-dark-700 mb-6">{t('contactTitle')}</h2>
+            <div className="fade-in animate-float-slow">
+              <div className="glass-panel rounded-[40px] p-8 md:p-12 h-full">
+                <h2 className="text-3xl font-bold text-dark-700 mb-8">{t('contactTitle')}</h2>
 
                 <div className="space-y-6">
-                  {/* Email */}
                   {contact?.email && (
-                    <div className="flex items-start space-x-4 p-4 bg-secondary-50 rounded-xl hover:bg-secondary-100 transition-colors">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-warm">
-                        <Mail size={24} className="text-white" />
+                    <div className="flex items-center space-x-6 p-4 rounded-3xl hover:bg-white/40 transition-colors group">
+                      <div className="w-16 h-16 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                        <Mail size={28} className="text-primary-600" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-dark-700 mb-1">{t('email')}</h3>
-                        <a href={`mailto:${contact.email}`} className="text-primary-600 hover:text-primary-700 font-semibold">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-dark-500 mb-1">{t('email')}</h3>
+                        <a href={`mailto:${contact.email}`} className="text-dark-800 hover:text-primary-600 font-bold text-lg transition-colors break-all">
                           {contact.email}
                         </a>
                       </div>
                     </div>
                   )}
 
-                  {/* Phone */}
                   {contact?.phone && (
-                    <div className="flex items-start space-x-4 p-4 bg-secondary-50 rounded-xl hover:bg-secondary-100 transition-colors">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-warm">
-                        <Phone size={24} className="text-white" />
+                    <div className="flex items-center space-x-6 p-4 rounded-3xl hover:bg-white/40 transition-colors group">
+                      <div className="w-16 h-16 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                        <Phone size={28} className="text-primary-600" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-dark-700 mb-1">{t('phone')}</h3>
-                        <a href={`tel:${contact.phone}`} className="text-primary-600 hover:text-primary-700 font-semibold">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-dark-500 mb-1">{t('phone')}</h3>
+                        <a href={`tel:${contact.phone}`} className="text-dark-800 hover:text-primary-600 font-bold text-lg transition-colors break-words">
                           {contact.phone}
                         </a>
                       </div>
                     </div>
                   )}
 
-                  {/* WhatsApp */}
                   {contact?.whatsapp && (
-                    <div className="flex items-start space-x-4 p-4 bg-secondary-50 rounded-xl hover:bg-secondary-100 transition-colors">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-warm">
-                        <MessageCircle size={24} className="text-white" />
+                    <div className="flex items-center space-x-6 p-4 rounded-3xl hover:bg-white/40 transition-colors group">
+                      <div className="w-16 h-16 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                        <MessageCircle size={28} className="text-primary-600" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-dark-700 mb-1">{t('whatsapp')}</h3>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-dark-500 mb-1">{t('whatsapp')}</h3>
                         <a 
                           href={`https://wa.me/${contact.whatsapp.replace(/\D/g, '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-primary-600 hover:text-primary-700 font-semibold"
+                          className="text-dark-800 hover:text-primary-600 font-bold text-lg transition-colors break-words"
                         >
                           {contact.whatsapp}
                         </a>
@@ -91,15 +87,14 @@ const Contact = () => {
                     </div>
                   )}
 
-                  {/* Address */}
                   {contact?.address && (
-                    <div className="flex items-start space-x-4 p-4 bg-secondary-50 rounded-xl hover:bg-secondary-100 transition-colors">
-                      <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-warm">
-                        <MapPin size={24} className="text-white" />
+                    <div className="flex items-center space-x-6 p-4 rounded-3xl hover:bg-white/40 transition-colors group">
+                      <div className="w-16 h-16 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                        <MapPin size={28} className="text-primary-600" />
                       </div>
-                      <div>
-                        <h3 className="font-bold text-dark-700 mb-1">{t('address')}</h3>
-                        <p className="text-dark-600">{contact.address}</p>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-bold text-dark-500 mb-1">{t('address')}</h3>
+                        <p className="text-dark-800 font-semibold break-words">{contact.address}</p>
                       </div>
                     </div>
                   )}
@@ -108,9 +103,9 @@ const Contact = () => {
             </div>
 
             {/* Social Links */}
-            <div className="fade-in" style={{ animationDelay: '0.1s' }}>
-              <div className="bg-white rounded-2xl shadow-warm-lg p-8 border border-primary-100 h-full">
-                <h2 className="text-3xl font-bold text-dark-700 mb-6">{t('socialLinks')}</h2>
+            <div className="fade-in animate-float-delayed">
+              <div className="glass-panel rounded-[40px] p-8 md:p-12 h-full">
+                <h2 className="text-3xl font-bold text-dark-700 mb-8">{t('socialLinks')}</h2>
 
                 {socials.length > 0 ? (
                   <div className="space-y-4">
@@ -120,20 +115,23 @@ const Contact = () => {
                         href={url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center space-x-4 p-4 bg-secondary-50 rounded-xl hover:bg-primary-50 transition-colors group"
+                        className="flex items-center space-x-6 p-4 rounded-3xl hover:bg-white/60 transition-all group shadow-sm hover:shadow-md border border-transparent hover:border-white/80"
                       >
-                        <div className="w-12 h-12 bg-gradient-to-br from-primary-400 to-primary-600 rounded-full flex items-center justify-center flex-shrink-0 shadow-warm group-hover:shadow-lg transition-shadow">
-                          <Icon size={24} className="text-white" />
+                        <div className="w-16 h-16 rounded-2xl bg-white border border-white shadow-sm flex items-center justify-center flex-shrink-0 group-hover:scale-110 transition-transform duration-300">
+                          <Icon size={28} className="text-primary-600" />
                         </div>
                         <div className="flex-1">
-                          <h3 className="font-bold text-dark-700">{label}</h3>
+                          <h3 className="font-bold text-dark-800 text-lg group-hover:text-primary-600 transition-colors">{label}</h3>
                         </div>
-                        <ExternalLink size={20} className="text-primary-600 group-hover:text-primary-700" />
+                        <ExternalLink size={24} className="text-dark-400 group-hover:text-primary-600 transition-colors" />
                       </a>
                     ))}
                   </div>
                 ) : (
-                  <p className="text-dark-500 text-center py-8">No social links available yet.</p>
+                  <div className="flex flex-col items-center justify-center py-12 opacity-60">
+                    <Music size={48} className="text-dark-400 mb-4" />
+                    <p className="text-dark-600 font-medium">No social links available yet.</p>
+                  </div>
                 )}
               </div>
             </div>
@@ -144,4 +142,4 @@ const Contact = () => {
   );
 };
 
-export default Contact;
+export default Contact;

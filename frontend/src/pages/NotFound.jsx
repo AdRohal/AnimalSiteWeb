@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Home, Lock } from 'lucide-react';
+import { Home, Lock, AlertTriangle } from 'lucide-react';
 import { useLanguage } from '../contexts/LanguageContext';
 
 const NotFound = () => {
@@ -19,94 +19,60 @@ const NotFound = () => {
   }, []);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
-      {/* Animated background elements */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-0 left-0 w-96 h-96 bg-blue-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob"></div>
-        <div className="absolute top-0 right-0 w-96 h-96 bg-purple-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
-        <div className="absolute bottom-0 left-1/2 w-96 h-96 bg-pink-500 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
-      </div>
+    <div className="min-h-screen py-12 px-4 relative overflow-hidden flex items-center justify-center">
+      <div className="max-w-3xl w-full mx-auto relative z-10">
+        
+        <div className="glass-panel rounded-[40px] p-10 md:p-16 text-center animate-float-slow relative overflow-hidden">
+          {/* Subtle background decoration inside the card */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-primary-200/30 rounded-full blur-3xl z-0 pointer-events-none"></div>
+          <div className="absolute bottom-0 left-0 w-64 h-64 bg-secondary-300/30 rounded-full blur-3xl z-0 pointer-events-none"></div>
+          
+          <div className="relative z-10">
+            {/* Lock Icon */}
+            <div className="flex justify-center mb-8">
+              <div className="w-24 h-24 rounded-3xl bg-white/60 border border-white/80 shadow-sm flex items-center justify-center">
+                <AlertTriangle size={48} className="text-primary-600 drop-shadow-sm" />
+              </div>
+            </div>
 
-      {/* Content */}
-      <div className="relative z-10 text-center px-6">
-        {/* Lock Icon */}
-        <div className="flex justify-center mb-8">
-          <div className="p-6 bg-gradient-to-br from-red-500 to-pink-600 rounded-full">
-            <Lock size={64} className="text-white" />
+            {/* Error Code */}
+            <h1 className="text-8xl md:text-9xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-primary-500 to-primary-800 drop-shadow-sm mb-4">
+              404
+            </h1>
+
+            {/* Error Title */}
+            <h2 className="text-4xl font-bold text-dark-800 mb-6">
+              {language === 'ar' ? 'الوصول مرفوض أو الصفحة غير موجودة' : 'Access Denied or Not Found'}
+            </h2>
+
+            {/* Error Description */}
+            <p className="text-xl text-dark-600 mb-12 max-w-lg mx-auto leading-relaxed font-medium">
+              {language === 'ar'
+                ? 'عذراً، ربما تكون قد فقدت طريقك أو تحتاج إلى تسجيل الدخول للوصول إلى هذه الصفحة.'
+                : 'Sorry, you might have lost your way or need to be logged in to access this page.'}
+            </p>
+
+            {/* Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              <button
+                onClick={() => navigate('/')}
+                className="glass-button bg-primary-500/90 hover:bg-primary-600 text-white border-primary-400 flex items-center justify-center gap-3 px-8 py-4 text-lg w-full sm:w-auto"
+              >
+                <Home size={24} />
+                {language === 'ar' ? 'العودة للصفحة الرئيسية' : 'Return to Home'}
+              </button>
+
+              <button
+                onClick={() => navigate('/admin/login')}
+                className="glass-button flex items-center justify-center gap-3 px-8 py-4 text-lg w-full sm:w-auto"
+              >
+                <Lock size={24} className="text-primary-600" />
+                {language === 'ar' ? 'تسجيل الدخول' : 'Login'}
+              </button>
+            </div>
           </div>
         </div>
-
-        {/* Error Code */}
-        <h1 className="text-9xl font-bold bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent mb-4">
-          404
-        </h1>
-
-        {/* Error Title */}
-        <h2 className="text-4xl md:text-5xl font-bold text-white mb-4">
-          {language === 'ar' ? 'الوصول مرفوض' : 'Access Denied'}
-        </h2>
-
-        {/* Error Description */}
-        <p className="text-xl text-gray-300 mb-12 max-w-md mx-auto leading-relaxed">
-          {language === 'ar'
-            ? 'عذراً، يجب عليك تسجيل الدخول للوصول إلى لوحة التحكم. يرجى تسجيل الدخول أولاً.'
-            : 'Sorry, you need to be logged in to access the admin dashboard. Please log in first.'}
-        </p>
-
-        {/* Buttons */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-12">
-          <button
-            onClick={() => navigate('/')}
-            className="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-blue-500 to-blue-600 hover:from-blue-600 hover:to-blue-700 text-white font-bold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-blue-500/50"
-          >
-            <Home size={20} />
-            {language === 'ar' ? 'العودة للصفحة الرئيسية' : 'Return to Home'}
-          </button>
-
-          <button
-            onClick={() => navigate('/admin/login')}
-            className="flex items-center justify-center gap-3 px-8 py-4 bg-gradient-to-r from-purple-500 to-pink-600 hover:from-purple-600 hover:to-pink-700 text-white font-bold rounded-lg transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-purple-500/50"
-          >
-            <Lock size={20} />
-            {language === 'ar' ? 'تسجيل الدخول' : 'Login'}
-          </button>
-        </div>
-
-        {/* Additional info */}
-        <div className="text-gray-400 text-sm">
-          <p>
-            {language === 'ar'
-              ? 'إذا كنت تعتقد أن هذا خطأ، يرجى التواصل معنا.'
-              : 'If you believe this is an error, please contact us.'}
-          </p>
-        </div>
       </div>
-
-      <style>{`
-        @keyframes blob {
-          0%, 100% {
-            transform: translate(0, 0) scale(1);
-          }
-          33% {
-            transform: translate(30px, -50px) scale(1.1);
-          }
-          66% {
-            transform: translate(-20px, 20px) scale(0.9);
-          }
-        }
-
-        .animate-blob {
-          animation: blob 7s infinite;
-        }
-
-        .animation-delay-2000 {
-          animation-delay: 2s;
-        }
-
-        .animation-delay-4000 {
-          animation-delay: 4s;
-        }
-      `}</style>
     </div>
   );
 };

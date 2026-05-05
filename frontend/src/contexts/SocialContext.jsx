@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import api from '../utils/api';
+import { fallbackSocialLinks } from '../utils/fallbackData';
 
 const SocialContext = createContext();
 
@@ -14,14 +15,8 @@ export const SocialProvider = ({ children }) => {
   const [loading, setLoading] = useState(true);
 
   const loadLinks = useCallback(async () => {
-    try {
-      const response = await api.get('/social-links');
-      setLinks(response.data.links || []);
-    } catch (error) {
-      console.error('Failed to load social links', error);
-    } finally {
-      setLoading(false);
-    }
+    setLinks(fallbackSocialLinks);
+    setLoading(false);
   }, []);
 
   useEffect(() => {
@@ -33,16 +28,7 @@ export const SocialProvider = ({ children }) => {
     [links]
   );
 
-  const saveLink = async (platform, url) => {
-    try {
-      await api.put(`/social-links/${platform}`, { url });
-      await loadLinks();
-      return { success: true };
-    } catch (error) {
-      const message = error.response?.data?.message || 'Unable to save link';
-      return { success: false, message };
-    }
-  };
+  const saveLink = async () => ({ success: false, message: 'Frontend-only mode' });
 
   return (
     <SocialContext.Provider value={{ links, loading, getLink, saveLink, reload: loadLinks }}>

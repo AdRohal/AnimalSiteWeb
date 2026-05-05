@@ -1,345 +1,169 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
-import { useSocial } from '../contexts/SocialContext';
 import { Link } from 'react-router-dom';
-import api from '../utils/api';
-import MediaCard from '../components/MediaCard';
-import { Heart, Users, Award, Play, ExternalLink, Facebook, Instagram, Twitter, Youtube, Music } from 'lucide-react';
-import { toEmbedUrl } from '../utils/media';
-import { getVideoPoster } from '../utils/media';
+import { ArrowUpRight, HeartHandshake, Phone, PawPrint, ShieldCheck, Stethoscope, PlayCircle, Sparkles } from 'lucide-react';
 
-const youtubeLink = 'https://www.youtube.com/watch?v=Fq1Aq1_UNgQ';
+const youtubeVideos = [
+  'https://youtu.be/AC2QGFbLQyA?si=Nx3jXxsV0B8GDquS',
+  'https://youtu.be/Zf84tGTrNig?si=DHS4YERORs0wkBk9',
+  'https://youtu.be/e8M5NbadEPU?si=rHCrHmv4Feqdn6H1',
+  'https://youtu.be/sGWL20Rb77M?si=sAgk_A47FV7PrqAJ',
+  'https://youtu.be/oupdhjfJFaY?si=A6cvnC_JWMXgxcGP',
+];
 
-const Home = () => {
-  const { t, language } = useLanguage();
-  const { links: socialLinks } = useSocial();
-  const [recentPosts, setRecentPosts] = useState([]);
-  const [loading, setLoading] = useState(true);
-  const [activeVideo, setActiveVideo] = useState(null);
-  const [activeIsPortrait, setActiveIsPortrait] = useState(false);
+const VideoFacade = ({ url }) => {
+  const [isLoaded, setIsLoaded] = useState(false);
 
-  useEffect(() => {
-    fetchRecentPosts();
-  }, []);
-
-  const fetchRecentPosts = async () => {
+  const getId = (url) => {
     try {
-      const response = await api.get('/posts?limit=9&published=true');
-      setRecentPosts(response.data.posts);
-    } catch (error) {
-      console.error('Error fetching posts:', error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleMediaClick = (post) => {
-    if (post.media_type === 'video') {
-      setActiveVideo(post);
-      setActiveIsPortrait(false);
-    }
-  };
-
-  const closeVideoModal = () => {
-    setActiveVideo(null);
-    setActiveIsPortrait(false);
-  };
-
-  const autoplayEmbedUrl = (url) => {
-    if (!url) return null;
-    return `${url}${url.includes('?') ? '&' : '?'}autoplay=1`;
-  };
-
-  const isFacebookUrl = (url) => {
-    if (!url) return false;
-    try {
-      const parsed = new URL(url);
-      return parsed.hostname.includes('facebook.com') || parsed.hostname.includes('fb.watch');
+      const u = new URL(url);
+      return u.pathname.includes('/watch') ? u.searchParams.get('v') : u.pathname.split('/').pop();
     } catch {
-      return false;
+      return null;
     }
   };
 
-  const getSocialIcon = (platform) => {
-    const iconProps = { size: 24, className: 'text-white' };
-    switch (platform) {
-      case 'facebook':
-        return <Facebook {...iconProps} />;
-      case 'instagram':
-        return <Instagram {...iconProps} />;
-      case 'twitter':
-        return <Twitter {...iconProps} />;
-      case 'youtube':
-        return <Youtube {...iconProps} />;
-      case 'tiktok':
-        return <Music {...iconProps} />;
-      default:
-        return <ExternalLink {...iconProps} />;
-    }
-  };
+  const id = getId(url);
+  const embedUrl = `https://www.youtube.com/embed/${id}?autoplay=1`;
+  const thumbUrl = `https://img.youtube.com/vi/${id}/maxresdefault.jpg`;
+  const fallbackThumbUrl = `https://img.youtube.com/vi/${id}/hqdefault.jpg`;
 
-  const getSocialLabel = (platform) => {
-    const labels = {
-      facebook: 'Facebook',
-      instagram: 'Instagram',
-      twitter: 'Twitter',
-      youtube: 'YouTube',
-      tiktok: 'TikTok',
-    };
-    return labels[platform] || platform;
-  };
-
-  const activeEmbedUrl = activeVideo ? autoplayEmbedUrl(toEmbedUrl(activeVideo.media_url)) : null;
-  const isFacebook = activeVideo ? isFacebookUrl(activeVideo.media_url) : false;
-  const modalTitle = activeVideo ? (language === 'ar' ? activeVideo.title_ar : activeVideo.title_en) : t('videosTitle');
+  if (isLoaded) {
+    return <iframe className="w-full aspect-video border-0" src={embedUrl} title="association video" allowFullScreen allow="autoplay; encrypted-media" />;
+  }
 
   return (
-    <div className="min-h-screen">
-      {/* Hero Section */}
-      <section
-        className="relative min-h-[75vh] flex items-center bg-center bg-cover bg-no-repeat"
-        style={{
-          backgroundImage:
-            "linear-gradient(180deg, rgba(44, 62, 80, 0.55), rgba(44, 62, 80, 0.55)), url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1600&q=80')",
-        }}
-      >
-        <div className="absolute inset-0 bg-gradient-to-b from-dark-900/30 via-dark-800/15 to-dark-900/30" />
-        <div className="container mx-auto px-4 py-16 relative z-10">
-          <div className="max-w-5xl text-left space-y-6 text-white drop-shadow-lg">
-            <p className="text-sm uppercase tracking-[0.4em] text-white/80">{language === 'ar' ? 'معاً ننقذ الحيوان' : 'Together we rescue animals'}</p>
-            <h1 className={`text-4xl sm:text-5xl md:text-6xl font-bold leading-tight ${language === 'ar' ? 'font-arabic' : ''}`}>
-              {language === 'ar' ? 'قلوب دافئة، بيوت آمنة' : 'Warm hearts, safe homes'}
-            </h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-2xl">
-              {language === 'ar'
-                ? 'نمنح صوتاً لمن لا صوت له. ساعدنا في الإنقاذ والرعاية وتوفير المأوى للحيوانات المحتاجة.'
-                : 'We give voice to the voiceless. Help us rescue, care, and shelter animals in need.'}
-            </p>
-            <div className="flex flex-col sm:flex-row gap-3">
-              <Link to="/donations" className="bg-primary-500 text-white font-semibold px-6 py-3 rounded-lg shadow-warm-lg hover:shadow-warm transition-transform hover:-translate-y-0.5">
-                {language === 'ar' ? 'تبرع لنا' : 'Donate to us'}
-              </Link>
-              <Link to="/gallery" className="bg-white text-dark-700 border border-primary-100 font-semibold px-6 py-3 rounded-lg shadow-warm hover:bg-secondary-50 transition-transform hover:-translate-y-0.5">
-                {language === 'ar' ? 'شاهد المعرض' : 'View gallery'}
-              </Link>
-            </div>
-          </div>
+    <div className="w-full aspect-video relative cursor-pointer group bg-dark-900" onClick={() => setIsLoaded(true)}>
+      <img 
+        src={thumbUrl} 
+        onError={(e) => { e.target.src = fallbackThumbUrl; }} 
+        alt="Video thumbnail" 
+        className="w-full h-full object-cover opacity-90 group-hover:opacity-100 transition-all duration-500 group-hover:scale-105" 
+        loading="lazy" 
+      />
+      <div className="absolute inset-0 bg-black/20 group-hover:bg-transparent transition-colors duration-500 flex items-center justify-center">
+        <div className="w-16 h-16 rounded-full bg-primary-600/90 backdrop-blur-md flex items-center justify-center text-white shadow-lg transform group-hover:scale-110 transition-transform duration-500">
+          <svg className="w-8 h-8 ml-1" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
         </div>
-      </section>
+      </div>
+    </div>
+  );
+};
 
-      {/* Gallery Section */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          {/* Social Media Icons */}
-          {socialLinks && socialLinks.length > 0 && (
-            <div className="mb-16">
-              <div className="text-center mb-8">
-                <h3 className="text-2xl font-bold text-dark-700">{language === 'ar' ? 'تابعنا على وسائل التواصل' : 'Follow Us'}</h3>
+const Home = () => {
+  const { t } = useLanguage();
+  return (
+    <div className="relative w-full overflow-hidden pb-16 px-4">
+      <div className="max-w-7xl mx-auto space-y-16">
+        
+        {/* HERO SECTION */}
+        <section className="glass-panel rounded-[40px] p-8 md:p-14 relative overflow-hidden mt-6 animate-float-slow">
+          <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/40 to-transparent z-0 pointer-events-none"></div>
+          
+          <div className="grid lg:grid-cols-12 gap-12 items-center relative z-10">
+            <div className="lg:col-span-7">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full glass-panel border-white/80 text-primary-700 font-semibold mb-6 animate-float">
+                <Sparkles size={16} />
+                <span>{t('homePortfolioTag')}</span>
               </div>
-              <div className="flex justify-center">
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4 w-full max-w-2xl">
-                  {socialLinks.map((social) => (
-                    <a
-                      key={social.platform}
-                      href={social.url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="group rounded-2xl bg-gradient-to-br from-primary-500 to-primary-600 p-6 shadow-warm-lg hover:shadow-xl transition-all hover:-translate-y-1 flex flex-col items-center justify-center text-center"
-                    >
-                      <div className="mb-3 group-hover:scale-110 transition-transform">
-                        {getSocialIcon(social.platform)}
-                      </div>
-                      <p className="text-white font-semibold text-sm">{getSocialLabel(social.platform)}</p>
-                    </a>
-                  ))}
+              <h1 className="text-5xl md:text-7xl font-extrabold text-dark-800 leading-[1.1] tracking-tight mb-6 drop-shadow-sm">
+                {t('homeHeroTitle')}
+              </h1>
+              <p className="text-dark-600 text-xl leading-relaxed mb-8 max-w-2xl">
+                {t('homeHeroDesc')}
+              </p>
+              <div className="flex flex-col sm:flex-row gap-4">
+                <Link to="/donations" className="glass-button bg-primary-500/90 text-white hover:bg-primary-600 hover:text-white border-primary-400 flex items-center justify-center gap-2 group">
+                  {t('supportPaypal')} 
+                  <ArrowUpRight size={18} className="group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform" />
+                </Link>
+                <a href="tel:+212684332442" className="glass-button flex items-center justify-center gap-2">
+                  <Phone size={18} className="text-primary-600" /> 
+                  {t('callToHelp')}
+                </a>
+              </div>
+            </div>
+            
+            <div className="lg:col-span-5 relative">
+              <div className="relative grid grid-cols-2 gap-4">
+                <div className="glass-panel rounded-3xl p-6 flex flex-col justify-center items-center aspect-square shadow-lg">
+                  <img src="/logo.png" alt="logo" className="w-32 h-32 object-contain drop-shadow-md" />
+                </div>
+                <div className="glass-panel rounded-3xl p-6 flex flex-col justify-center items-center aspect-square shadow-lg">
+                  <p className="text-sm text-dark-500 font-medium mb-1 text-center">{t('animalsRescued')}</p>
+                  <p className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-br from-primary-500 to-primary-800 drop-shadow-sm">500+</p>
+                </div>
+                <div className="col-span-2 glass-panel rounded-3xl p-6 shadow-lg mt-4">
+                  <p className="text-dark-600 font-medium mb-4 text-center">{t('supportOptions')}</p>
+                  <div className="flex flex-wrap justify-center gap-2 text-sm font-semibold">
+                    <span className="px-4 py-2 rounded-xl bg-white/60 text-primary-700 shadow-sm border border-white/50 backdrop-blur-md">PayPal</span>
+                    <span className="px-4 py-2 rounded-xl bg-white/60 text-dark-700 shadow-sm border border-white/50 backdrop-blur-md">{t('phoneCall')}</span>
+                    <span className="px-4 py-2 rounded-xl bg-white/60 text-dark-700 shadow-sm border border-white/50 backdrop-blur-md">{t('socialSharing')}</span>
+                  </div>
                 </div>
               </div>
             </div>
-          )}
-
-          <div className="text-center mb-12">
-            <h2 className="text-4xl font-bold text-dark-700 mb-4">{t('postsTitle')}</h2>
-            <p className="text-dark-500 text-lg">{t('postsSubtitle')}</p>
           </div>
+        </section>
 
-          {loading ? (
-            <div className="text-center py-12">
-              <div className="inline-block animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
-            </div>
-          ) : (
-            <>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-                {recentPosts.slice(0, 9).map((post) => {
-                  if (post.media_type === 'video') {
-                    const title = language === 'ar' ? post.title_ar : post.title_en;
-                    const poster = getVideoPoster(post.media_url);
-                    return (
-                      <div
-                        key={post.id}
-                        className="rounded-[32px] overflow-hidden bg-white shadow-warm-lg border border-primary-100 flex flex-col"
-                      >
-                        <div className="relative bg-secondary-100 aspect-[16/9]">
-                          <video
-                            src={post.media_url}
-                            poster={poster || undefined}
-                            className="absolute inset-0 w-full h-full object-cover"
-                            preload="metadata"
-                            muted
-                            playsInline
-                          />
-                          <div className="absolute inset-0 bg-black/35" />
-                          <button
-                            type="button"
-                            onClick={() => handleMediaClick(post)}
-                            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 flex items-center gap-2 bg-white/90 px-4 py-2 rounded-full shadow-xl text-dark-700"
-                          >
-                            <Play size={18} />
-                            <span className="text-sm font-semibold uppercase tracking-[0.3em]">{t('watchVideo')}</span>
-                          </button>
-                        </div>
-                        <div className="p-6 space-y-2 text-left">
-                          <h3 className="text-xl font-semibold text-dark-700">{title}</h3>
-                          <p className="text-sm text-dark-500 uppercase tracking-[0.3em]">{t('watchVideo')}</p>
-                        </div>
-                      </div>
-                    );
-                  }
-
-                  return <MediaCard key={post.id} post={post} onClick={handleMediaClick} />;
-                })}
+        {/* FEATURES SECTION */}
+        <section className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 relative z-10">
+          {[
+            {icon:PawPrint,title:t('streetRescue'),text:t('streetRescueDesc'), delay: '0s'},
+            {icon:Stethoscope,title:t('medicalCare'),text:t('medicalCareDesc'), delay: '0.2s'},
+            {icon:ShieldCheck,title:t('safeShelter'),text:t('safeShelterDesc'), delay: '0.4s'},
+            {icon:HeartHandshake,title:t('adoption'),text:t('adoptionDesc'), delay: '0.6s'}
+          ].map((item, index)=>(
+            <article key={item.title} className="glass-panel rounded-[32px] p-8 group hover:-translate-y-4" style={{ animation: `float 6s ease-in-out infinite ${item.delay}` }}>
+              <div className="w-14 h-14 rounded-2xl bg-white/60 border border-white/80 shadow-sm flex items-center justify-center mb-6 group-hover:scale-110 group-hover:bg-primary-100/50 transition-all duration-300">
+                <item.icon className="text-primary-600" size={28} />
               </div>
+              <h3 className="text-xl font-bold text-dark-800 mb-3">{item.title}</h3>
+              <p className="text-dark-600 leading-relaxed">{item.text}</p>
+            </article>
+          ))}
+        </section>
 
-              {recentPosts.length > 0 && (
-                <div className="text-center mt-12">
-                  <Link to="/gallery" className="btn-primary">
-                    {t('viewAll')}
-                  </Link>
-                </div>
-              )}
-
-              {recentPosts.length === 0 && (
-                <div className="text-center py-12 text-gray-500">
-                  <p className="text-xl">No posts available yet.</p>
-                </div>
-              )}
-            </>
-          )}
-        </div>
-      </section>
-
-      {/* Values Section as Cards */}
-      <section className="py-16 bg-white">
-        <div className="container mx-auto px-4">
-          <h2 className="text-4xl font-bold text-center mb-12 text-dark-700">{t('ourValues')}</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="text-left bg-white rounded-2xl p-8 shadow-warm-lg border border-primary-100">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-6">
-                <Heart size={32} className="text-white" />
+        {/* VIDEOS SECTION */}
+        <section className="glass-panel rounded-[40px] p-8 md:p-12 relative z-10">
+          <div className="flex flex-col sm:flex-row items-center justify-between mb-10 gap-4">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 rounded-full bg-white/60 flex items-center justify-center shadow-sm">
+                <PlayCircle className="text-primary-600" size={24} />
               </div>
-              <h3 className="text-2xl font-bold mb-2 text-dark-700">{t('compassion')}</h3>
-              <p className="text-dark-500">{t('compassionDesc')}</p>
+              <h2 className="text-3xl md:text-4xl font-extrabold text-dark-800">{t('rescueVideos')}</h2>
             </div>
-            <div className="text-left bg-white rounded-2xl p-8 shadow-warm-lg border border-primary-100">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-6">
-                <Award size={32} className="text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2 text-dark-700">{t('dedication')}</h3>
-              <p className="text-dark-500">{t('dedicationDesc')}</p>
-            </div>
-            <div className="text-left bg-white rounded-2xl p-8 shadow-warm-lg border border-primary-100">
-              <div className="w-16 h-16 bg-gradient-to-br from-primary-400 to-primary-600 rounded-xl flex items-center justify-center mb-6">
-                <Users size={32} className="text-white" />
-              </div>
-              <h3 className="text-2xl font-bold mb-2 text-dark-700">{t('community')}</h3>
-              <p className="text-dark-500">{t('communityDesc')}</p>
-            </div>
+            <Link to="/gallery" className="glass-button text-sm whitespace-nowrap">{t('viewAllMediaGallery')}</Link>
           </div>
-        </div>
-      </section>
-
-      {activeVideo && (
-        <div
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center px-4 py-6 gap-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={modalTitle}
-        >
-          <div className="absolute inset-0 bg-black/70 backdrop-blur-sm" onClick={closeVideoModal} />
-          <button
-            className="rounded-full bg-white px-4 py-2 text-sm font-semibold text-dark-700 shadow-lg transition hover:bg-secondary-50 relative z-20"
-            onClick={closeVideoModal}
-          >
-            {t('close')}
-          </button>
-          <div
-            className="relative inline-flex rounded-3xl shadow-2xl overflow-hidden bg-black max-w-[90vw] z-10"
-            onClick={(event) => event.stopPropagation()}
-          >
-            {activeEmbedUrl && !isFacebook ? (
-              <div
-                className="relative"
-                style={{ width: 'min(90vw, 960px)', aspectRatio: '16 / 9' }}
-              >
-                <iframe
-                  title={modalTitle}
-                  src={activeEmbedUrl}
-                  className="absolute inset-0 w-full h-full rounded-xl"
-                  allow="autoplay; fullscreen; picture-in-picture"
-                  loading="lazy"
-                  style={{ border: 'none' }}
-                />
-              </div>
-            ) : isFacebook ? (
-              <div className="relative flex flex-col items-center justify-center bg-black p-6 rounded-xl" style={{ width: 'min(90vw, 960px)', aspectRatio: '16 / 9' }}>
-                <div className="text-white text-center">
-                  <p className="mb-4 text-lg font-semibold">{modalTitle}</p>
-                  <p className="mb-6 text-sm text-gray-300">Facebook video embedding requires opening in a new window</p>
-                  <a
-                    href={activeVideo.media_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="inline-flex items-center gap-2 bg-primary-500 hover:bg-primary-600 text-white px-6 py-3 rounded-lg transition-colors font-semibold"
-                  >
-                    <ExternalLink size={18} />
-                    {language === 'ar' ? 'شاهد على فيسبوك' : 'Watch on Facebook'}
-                  </a>
+          <div className="grid md:grid-cols-3 gap-6">
+            {youtubeVideos.slice(0, 3).map((video, idx) => (
+              <div key={video} className="glass-panel p-2 rounded-[24px] overflow-hidden group" style={{ animation: `float-delayed ${7 + idx}s ease-in-out infinite` }}>
+                <div className="rounded-[18px] overflow-hidden shadow-inner relative">
+                  <VideoFacade url={video} />
+                  <div className="absolute inset-0 border-2 border-white/20 rounded-[18px] pointer-events-none"></div>
                 </div>
               </div>
-            ) : activeIsPortrait ? (
-              <div className="relative flex items-center justify-center bg-black p-3">
-                <video
-                  src={activeVideo.media_url}
-                  className="max-h-[85vh] max-w-[90vw] w-auto h-auto object-contain bg-black rounded-xl"
-                  autoPlay
-                  controls
-                  playsInline
-                  onLoadedMetadata={(e) => {
-                    const v = e.target;
-                    setActiveIsPortrait(v.videoHeight > v.videoWidth);
-                  }}
-                />
-              </div>
-            ) : (
-              <div
-                className="relative bg-black"
-                style={{ width: 'min(90vw, 960px)', aspectRatio: '16 / 9' }}
-              >
-                <video
-                  src={activeVideo.media_url}
-                  className="absolute inset-0 w-full h-full object-cover"
-                  autoPlay
-                  controls
-                  playsInline
-                  onLoadedMetadata={(e) => {
-                    const v = e.target;
-                    setActiveIsPortrait(v.videoHeight > v.videoWidth);
-                  }}
-                />
-              </div>
-            )}
+            ))}
           </div>
-        </div>
-      )}
+        </section>
+
+        {/* CTA SECTION */}
+        <section className="relative overflow-hidden rounded-[40px] z-10 animate-float-slow">
+          <div className="absolute inset-0 bg-dark-800 z-0"></div>
+          
+          <div className="relative z-10 p-10 md:p-16 grid lg:grid-cols-2 gap-10 items-center">
+            <div>
+              <h2 className="text-4xl md:text-5xl font-extrabold text-white mb-4 leading-tight">{t('impactTodayTitle')}</h2>
+              <p className="text-white/80 text-lg">{t('impactTodayDesc')}</p>
+            </div>
+            <div className="flex flex-col sm:flex-row gap-4 lg:justify-end">
+              <Link to="/donations" className="glass-button bg-primary-500/20 text-white hover:bg-primary-500/40 border-primary-400/50 text-center text-lg">{t('donate')}</Link>
+              <Link to="/contact" className="glass-button bg-white/10 text-white hover:bg-white/20 border-white/20 text-center text-lg">{t('contactTeam')}</Link>
+            </div>
+          </div>
+        </section>
+        
+      </div>
     </div>
   );
 };
