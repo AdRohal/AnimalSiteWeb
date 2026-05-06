@@ -9,7 +9,7 @@ export const fallbackContact = {
   phone: '+212 684332442',
   email: 'associationanimalsrescue@gmail.com',
   whatsapp: '+212 684332442',
-  address: 'Morocco',
+  address: 'Morocco, El Jadida-Azemmour',
 };
 
 export const fallbackBanking = {

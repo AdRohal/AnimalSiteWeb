@@ -61,7 +61,7 @@ const Contact = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-dark-500 mb-1">{t('phone')}</h3>
-                        <a href={`tel:${contact.phone}`} className="text-dark-800 hover:text-primary-600 font-bold text-lg transition-colors break-words">
+                        <a href={`tel:${contact.phone}`} dir="ltr" className="inline-block text-dark-800 hover:text-primary-600 font-bold text-lg transition-colors break-words">
                           {contact.phone}
                         </a>
                       </div>
@@ -79,7 +79,8 @@ const Contact = () => {
                           href={`https://wa.me/${contact.whatsapp.replace(/\D/g, '')}`}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="text-dark-800 hover:text-primary-600 font-bold text-lg transition-colors break-words"
+                          dir="ltr"
+                          className="inline-block text-dark-800 hover:text-primary-600 font-bold text-lg transition-colors break-words"
                         >
                           {contact.whatsapp}
                         </a>
@@ -94,7 +95,11 @@ const Contact = () => {
                       </div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-bold text-dark-500 mb-1">{t('address')}</h3>
-                        <p className="text-dark-800 font-semibold break-words">{contact.address}</p>
+                        <p className="text-dark-800 font-semibold break-words">
+                          {contact.address === 'Morocco' || contact.address === 'Morocco, El Jadida-Azemmour' 
+                            ? t('addressValue') 
+                            : contact.address}
+                        </p>
                       </div>
                     </div>
                   )}

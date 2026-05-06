@@ -29,7 +29,7 @@ const Footer = () => {
           <div>
             <p className="font-semibold mb-3">{t('support')}</p>
             <a href="/donations" className="block text-dark-200 mb-2">{t('donateByPaypal')}</a>
-            <a href={`tel:${contact?.phone || '+212684332442'}`} className="block text-dark-200 inline-flex items-center gap-2"><Phone size={15}/> {contact?.phone || '+212 684332442'}</a>
+            <a href={`tel:${contact?.phone || '+212684332442'}`} className="block text-dark-200 inline-flex items-center gap-2"><Phone size={15}/> <span dir="ltr">{contact?.phone || '+212 684332442'}</span></a>
             <a href={`mailto:${contact?.email || 'associationanimalsrescue@gmail.com'}`} className="block text-dark-200 mt-2 inline-flex items-center gap-2"><Mail size={15}/> {contact?.email || 'associationanimalsrescue@gmail.com'}</a>
           </div>
           <div>

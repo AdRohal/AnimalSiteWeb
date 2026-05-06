@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useLanguage } from '../contexts/LanguageContext';
 import { useBanking } from '../contexts/BankingContext';
-import { Heart, Copy, Check, PawPrint, Stethoscope, Home as HomeIcon, CreditCard, Landmark } from 'lucide-react';
+import { Heart, Copy, Check, PawPrint, Stethoscope, Home as HomeIcon, CreditCard, Landmark, Info } from 'lucide-react';
 
 const Donations = () => {
   const { t, language } = useLanguage();
@@ -114,8 +114,9 @@ const Donations = () => {
                 </div>
 
                 <div className="bg-primary-500/10 border border-primary-500/20 rounded-2xl p-5 text-sm text-dark-700 font-medium">
-                  <p className="font-bold text-primary-800 mb-2">
-                    {language === 'ar' ? '📝 تعليمات التحويل:' : '📝 Transfer Instructions:'}
+                  <p className="font-bold text-primary-800 mb-2 flex items-center gap-2">
+                    <Info size={18} className="text-primary-600" />
+                    {language === 'ar' ? 'تعليمات التحويل:' : 'Transfer Instructions:'}
                   </p>
                   <ul className="space-y-2">
                     <li>{language === 'ar' ? '• انسخ رقم الحساب أعلاه' : '• Copy the account number above'}</li>
