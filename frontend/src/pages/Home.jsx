@@ -53,11 +53,25 @@ const VideoFacade = ({ url }) => {
 const Home = () => {
   const { t } = useLanguage();
   return (
-    <div className="relative w-full overflow-hidden pb-16 px-4">
-      <div className="max-w-7xl mx-auto space-y-16">
-        
-        {/* HERO SECTION */}
-        <section className="glass-panel rounded-[40px] p-8 md:p-14 relative overflow-hidden mt-6 animate-float-slow">
+    <div className="relative w-full overflow-hidden pb-16 -mt-[100px]">
+      
+      {/* Background Wrapper for Header & Hero */}
+      <div className="relative w-full pt-[116px] pb-12">
+        <div 
+          className="absolute inset-0 z-0 pointer-events-none"
+          style={{
+            backgroundImage: `url('https://images.unsplash.com/photo-1450778869180-41d0601e046e?auto=format&fit=crop&w=1600&q=80')`,
+            backgroundSize: 'cover',
+            backgroundPosition: 'center 30%'
+          }}
+        >
+          {/* Gradient to blend smoothly into the page background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-transparent via-white/40 to-[#FAF6EF]"></div>
+        </div>
+
+        <div className="max-w-7xl mx-auto px-4 relative z-10">
+          {/* HERO SECTION */}
+          <section className="glass-panel rounded-[40px] p-8 md:p-14 relative overflow-hidden mt-6 animate-float-slow">
           <div className="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-white/40 to-transparent z-0 pointer-events-none"></div>
           
           <div className="grid lg:grid-cols-12 gap-12 items-center relative z-10">
@@ -105,7 +119,10 @@ const Home = () => {
             </div>
           </div>
         </section>
+        </div>
+      </div>
 
+      <div className="max-w-7xl mx-auto space-y-16 px-4 relative z-10 mt-12">
         {/* FEATURES SECTION */}
         <section className="grid md:grid-cols-2 xl:grid-cols-4 gap-6 relative z-10">
           {[
